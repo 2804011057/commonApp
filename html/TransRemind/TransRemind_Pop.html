@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<script type="text/javascript" src="../../js/vue.js" ></script>
+		<style type="text/css">
+			*{
+				background-color: #FFFFFF;
+			}
+			.inputBox{
+				width: 100%;height: 50px;
+				border-bottom: 1px solid #EEEEEE;
+			}
+			
+			.inputBox input{
+				width: 100%;height: 100%;
+				padding-left: 50px;
+				border: none;
+			}
+			.inputBox div{
+				width: 50px;
+				height: 50px;
+				text-align: center;
+				line-height: 50px;
+				position: absolute;
+				border-bottom: 1px solid #EEEEEE;
+			}
+			.scrollBox{
+				position: absolute;top: 0px;bottom: 0px;width: 100%;overflow-y: scroll;border-radius: 20px;
+			}
+			
+			.scrollBox div{
+				width: 100%;height: 50px;line-height: 50px;color: #333333;
+			}
+			.mui-icon{
+				background-color: rgba(229, 229, 229, 1);
+			}
+			.mui-search .mui-placeholder .mui-icon {
+			    font-size: 20px;
+			    color: #333;
+			    vertical-align: middle;
+			    margin-top: 8px;
+			}
+			.mui-input-group{
+				position: fixed;
+				top:0;
+				z-index: 99999;
+			}
+			.mui-table-view{
+				margin-top: 50px;
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="scrollBox mui-content"  >
+			<form class="mui-input-group" style="width: 100%;">
+			    <div class="mui-input-row">
+			        <label>人员</label>
+			        <input type="text" class="" placeholder="请选择发送人员" v-model='input'>
+			    </div>
+			</form>
+			<ul class="mui-table-view"  v-cloak>
+			    <li v-for="num in peopleData" class="mui-table-view-cell"   v-show='num.Name.indexOf(input)>-1' >
+			    	<span class="name">{{num.Name}}</span>
+			    	<span class="hidden">{{num.MyUserId}}</span>
+			    </li>
+			</ul>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/index.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback:function(){
+				    plus.webview.getWebviewById('TransRemind').setStyle({mask:"none"});
+			    }
+			});
+			var vm="";
+			mui.plusReady(function(){
+				vm = new Vue({
+				 	el:'.scrollBox',
+				 	data:{
+				 		peopleData:[],
+				 		PartitionId:plus.webview.currentWebview().PartitionId,
+				 		input:''
+				 	}
+				 });
+//					获取人员列表
+				 $.get(url_all+"/api/MobileV2/QueryTransPerson?",
+					{UserId:localStorage.getItem('MyUserId'),
+					PartitionId:vm.PartitionId
+					},
+				  function(data){
+						vm.peopleData= data.data
+				  }
+				);
+			});
+			
+			mui('.scrollBox').on('tap','li',function(){
+				var sendName=$(this).find('.name').text();
+				var ReceiverId=$(this).find('.hidden').text();
+				setTimeout(function(){
+				    plus.webview.currentWebview().close();
+				}, 1000)
+				mui.openWindow({
+					url:'sendData.html',
+    				id:'sendData',
+    				styles:{
+      					top:'20%',//新页面顶部位置
+     				 	bottom:'20%',//新页面底部位置
+      					width:'90%',//新页面宽度，默认为100%
+      					left:'5%',
+      					height:'300px'
+    				},
+    				show:{
+      					aniShow:'zoom-fade-out',//页面显示动画，默认为”slide-in-right“；
+      					duration:100//页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+    				},
+    				waiting:{
+      					autoShow:false,//自动显示等待框，默认为true
+      				},
+      				extras:{
+      					sendName:sendName,
+      					code:plus.webview.currentWebview().code,
+						typeName:plus.webview.currentWebview().typeName,
+						packTime:plus.webview.currentWebview().packTime,
+						ysTime:plus.webview.currentWebview().ysTime,
+						YfAlarmRecId:plus.webview.currentWebview().YfAlarmRecId,
+						ReceiverId:ReceiverId
+      				}
+      			});
+
+			});
+			
+		</script>
+	</body>
+
+</html>

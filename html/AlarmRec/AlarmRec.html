@@ -1,0 +1,316 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<link href="../../css/LCalendar.css" rel="stylesheet" />
+		<style type="text/css">
+			html{
+				font-size: 10px;
+			}
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+			}
+			.mui-pull-top-tips {
+				position: absolute;
+				top: 30px;
+				left: 50%;
+				margin-left: -25px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+			.mui-bar~.mui-pull-top-tips {
+				top: 110px;		/*距离顶部的位置*/
+			}
+			.mui-pull-top-wrapper {
+				width: 42px;
+				height: 42px;
+				display: block;
+				text-align: center;
+				background-color: #efeff4;
+				border: 1px solid #ddd;
+				border-radius: 25px;
+				background-clip: padding-box;
+				box-shadow: 0 4px 10px #bbb;
+				overflow: hidden;
+			}
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+			.mui-pull-top-tips .mui-pull-loading {
+				/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+				
+				margin: 0;
+			}
+			.mui-pull-top-wrapper .mui-icon,
+			.mui-pull-top-wrapper .mui-spinner {
+				margin-top: 7px;/*NO*/
+			}
+			.mui-pull-top-wrapper .mui-icon.mui-reverse {
+				/*-webkit-transform: rotate(180deg) translateZ(0);*/
+			}
+			.mui-pull-bottom-tips {
+				text-align: center;
+				background-color: #efeff4;
+				font-size: 15px;
+				line-height: 40px;
+				color: #777;
+			}
+			.mui-pull-top-canvas {
+				overflow: hidden;
+				background-color: #fafafa;
+				border-radius: 40px;
+				box-shadow: 0 4px 10px #bbb;
+				width: 40px;
+				height: 40px;
+				margin: 0 auto;
+			}
+			.mui-pull-top-canvas canvas {
+				width: 40px;
+			}
+			.mui-slider-indicator.mui-segmented-control {
+				background-color: #efeff4;
+			}
+			
+			.mui-bar-nav {
+				background-color: #1F79CE;
+			}
+			
+			.mui-title {
+				color: #fff
+			}
+			
+			a {
+				color: #fff;
+			}
+			.third{
+				display: none;
+			}
+			[v-cloak] { display:none; }
+			#change{
+				position: relative;
+			}
+			#line{
+				position: absolute;
+				top: 48px;
+				/*width: 100%;*/
+				height: 1px;
+				z-index: 999;
+				background: #CCCCCC;
+			}
+			.mui-scroll-wrapper .mui-table-view,.today{
+				margin-top: 43px;
+			}
+			.mui-btn.mui-pull-right{
+				top: 5px;
+			}
+			.Daily_top{
+				margin-top: 44px;
+				position: fixed;
+				z-index: 999;
+				width: 100%;
+			}
+			#demo1{
+				margin-bottom: 0;
+			}
+			.mui-content>.mui-table-view:first-child {
+			    margin-top: 0;
+			}
+			.mui-bar-nav~.mui-content {
+			    /*padding-top: 160px;*/
+			  
+			}
+			.mui-table-view-cell{
+				padding: 11px 0;
+			}
+			.scroll{
+				padding-top: 148px;
+			}
+			input[type=text] {
+			    padding: 0;
+			}
+
+		</style>
+		<script type="text/javascript" src="../../js/vue.js" ></script>
+	</head>
+
+	<body class="mui-content">
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">报警记录</h1>
+		</header>
+		<!--日期选择-->
+		<div class="Daily_top">
+			<div class="rowf ar M homeP_1top0">
+	            <div class="col-33  rowf ac L" @click="subtract()">
+	                <span class=" mui-icon mui-icon-arrowleft subtract"></span>
+	                <p class="h4 subtract">前一天</p>
+	            </div>
+	            <div class="col-33 rowf ac M">
+	                <input v-model="input" class="tc " id="demo1" type="text" readonly="readonly" placeholder="日期"  />
+	            </div>
+	            <div class="col-33 rowf ac R " @click="add()">
+	                <p class="h4 last">后一天</p>          
+	                <span class=" mui-icon mui-icon-arrowright last"></span>
+	            </div>           
+	        </div>
+	        <ul class="mui-table-view" >
+	        	<li class="rowf mui-table-view-cell text_center">
+					<span class="col-33 M">时间</span>
+					<span class="col-33 M">医废类型</span>
+					<span class="col-33 M">编号</span>
+				</li>
+			</ul>	        
+	    </div>
+	    <div class='scroll'>
+	    	<div class="noInformation rowf M ac" v-show="!historyData.length">暂无信息</div>
+	    	<ul class="mui-table-view " v-show="historyData[0].YfCode">
+            	<li class="rowf mui-table-view-cell text_center" v-for="num in historyData" v-show='historyData'>
+                    <span class="col-33 M" v-text='num.PackTime.split(" ")[1]'></span>
+                    <span class='col-33 M' v-text='num.YfTypeName'></span>
+                    <span class='col-33 M' v-text='num.YfCode.substring(10)'></span>
+                	<span class="third" style="">{{num.YfCode}}</span>
+            	</li>
+			</ul>
+	    </div>
+				
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/time.js"></script>
+		<script type="text/javascript" src="../../js/index.js" ></script>
+		<script type="text/javascript" src="../../js/LCalendar.js" ></script>
+
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function(){
+				var ws=plus.webview.currentWebview();
+				ws.addEventListener('maskClick', function(){
+					if(plus.webview.getWebviewById('mask')!=""&&plus.webview.getWebviewById('mask')!=null){
+						plus.webview.getWebviewById('mask').close();
+					}
+					ws.setStyle({mask:'none'});
+				},false);
+				if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+					return;
+				}
+			});
+//				日期
+			var calendar = new LCalendar();
+	        calendar.init({
+		            'trigger': '#demo1', //标签id
+		            'type': 'date', //date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择,
+		            'minDate': '2017-5-1', //最小日期
+		            'maxDate': new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate() //最大日期
+		    });
+			
+			$('.last').css("color","#808080");
+			var vm="";
+//			mui.plusReady(function(){				
+				vm=new Vue({
+					el:".mui-content",
+					data:{
+						historyData:[],
+						page:1,
+						input_hidden:'',
+						input:'',
+						arry:[]
+					},
+					methods:{
+//							增加天数
+	                	add:function(){
+	                		if(moment(this.input).isBefore(moment().format("YYYY-MM-DD"))){
+				                this.input=moment(this.input).add(1, 'd').format("YYYY-MM-DD");
+				            }else{
+				                this.input=moment().format("YYYY-MM-DD");
+				                $('.last').css("color","#808080");
+				            };
+				            if((this.input) == moment().format("YYYY-MM-DD")){
+				                $('.last').css("color","#808080");
+				            };
+	               
+	                	},
+//		                	减少天数
+	                	subtract:function(){
+	                		this.input=moment(this.input).subtract(1, 'd').format("YYYY-MM-DD");
+	                		if(moment(this.input).isBefore(moment().format("YYYY-MM-DD"))){
+				                $('.last').css("color","#1F79CE");
+				            }else{
+				                $('.last').css("color","#808080");
+				            };
+	               
+	                	},
+						data:function(){
+							that= this;
+							$.get(url_all+"/api/MobileV2/QueryAlarmRec?",
+								{ UserId:localStorage.getItem('MyUserId'),
+									Date:that.input },
+							  function(data){
+									console.log(JSON.stringify(data.data));
+									vm.historyData =data.data;
+									vm.historyData.map(function(item){
+										vm.arry.push(item.YfCode)
+									})
+									
+							  }
+							);
+
+						}
+					},
+					watch:{
+		                	input_hidden:{
+		                		handler:function(){
+		                			vm.data();
+		                		}
+		                	},
+		                	input:{
+		                		handler:function(){
+		                			vm.data();
+		                		}
+		                	}
+		            }
+				});				
+				vm.input = moment().format("YYYY-MM-DD");
+				
+//			});
+			
+
+					
+			//			点击进入详情页
+			mui('.mui-table-view').on('tap','.mui-table-view-cell',function(e){
+				var code=this.querySelectorAll("span")[3].innerHTML;
+				console.log(JSON.stringify(vm.arry))
+	    		mui.openWindow({
+			         url: '../Search/Search.html', 
+			         id:'Search',
+			         extras:{	
+	                    code:code
+	               },
+			         show:{
+			            aniShow:'slide-in-right',
+			            duration:300
+			          },
+			         waiting:{
+			          autoShow:false
+			         }
+			    });
+			});
+			
+			
+		</script>
+	</body>
+
+</html>

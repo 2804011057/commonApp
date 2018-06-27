@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title></title>
+	</head>
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/index.css">
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-bar .mui-title{
+				text-align: center;
+			}
+			.mui-input-group {
+			    position: relative;
+			    padding: 0;
+			    border: 0;
+			    background-color: #fff;
+			    /*width: 50%;*/
+			    /* margin-left: 10%; */
+			    /*margin: 1rem 10%;*/
+			    /* font-size: 1.5rem; */
+			    /* height: 0rem; */
+			}
+			.mui-btn.msg{
+
+				height: 50px;
+			}
+			.mui-input-row.right label{
+				float: right;
+			}
+			.mui-btn.next{
+				width: 80%;
+				margin: 1rem 10%;
+				height: 4rem;
+			}
+			.mui-input-row label{
+				 line-height: 1.7;
+				 border:none
+
+			}
+			.mui-input-row label~input{
+				padding: 10px;
+			    border: none;
+			    height: 50px;
+			    line-height: 50px;
+
+			}
+			.mui-input-group .mui-input-row {
+			    height: 50px;
+			    border-left: 1px solid gainsboro;
+			    border-right: 1px solid gainsboro;
+			}
+			.top{
+				width: 80%;
+			    margin: 1rem 10%;
+			}
+			input[type=text]{
+				height: 50px;
+			}
+			.mui-content{
+				width: 100%;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			    color: white;
+			}
+			.mui-title {
+			    color: #fff;
+			}
+			a {
+			    color: #fff;
+			}
+						
+		</style>
+	<body>
+		<!--导航栏-->
+		<header  id="header" class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">找回密码</h1>
+		</header>
+		<div class="mui-content" id='content'>
+		    <div class="top">
+		    	<p>请输入新密码：</p>
+		    </div>
+		    <div class="rowf ac be" style="width: 100%;padding: 0 10%; ">
+		    	<form class="mui-input-group col-100">
+				    <div class="mui-input-row right">
+				        <input type="text" class="mui-input-clear" v-model='pass' placeholder="请输入内容">
+				    </div>			    
+				</form>
+		    </div>
+		    <div style="width: 100%;padding: 0 10%; ">
+		    	<p>
+		    		备注：请将密码设置为6-20位，并且由字母数字构成，新密码不能与旧密码重复。
+		    	</p>
+		    </div>
+			<div class="rowf ac M">
+				<button type="button" class="mui-btn next" @click = 'forget'>完成</button>
+			</div>
+		</div>
+
+	</body>
+</html>
+	<script src="../../js/mui.min.js"></script>
+	<script type="text/javascript" src="../../js/vue.js"></script>
+	<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init();
+		mui.plusReady(function(){
+            var self = plus.webview.currentWebview();
+            vm.ID = self.ID;
+        });
+   		var vm = new Vue({
+		       	el:'#content',
+		        data:{
+		        
+		        	pass:'',
+		        	show:false,
+		        	ID:'',
+		        },
+		        methods:{
+		        	forget:function(){
+		        		that = this;
+//		        		alert(that.ID);
+		        		console.log(url_all+'/cloud/shyf/api/np/v1/modifyPassword/staffPasswordUpdate.smvc?');
+				        mui.post(url_all+'/cloud/shyf/api/np/v1/modifyPassword/staffPasswordUpdate.smvc?',{
+							password:that.pass,
+							id:that.ID
+						},function(data){
+							//服务器返回响应，根据响应结果，分析是否登录成功；
+							console.log(data,'9999999999999');
+//							alert(data.data);
+							mui.openWindow({
+						         url: 'login.html', 
+						         id:'login',
+						         show:{
+						            aniShow:'slide-in-right',
+						            duration:300
+						          },
+						         waiting:{
+						          autoShow:false
+						    	}
+						    });
+//							that.work = data.data.rows;
+						
+						},'json'
+						);
+//		        		
+		        	}
+		
+		        }
+			});
+		
+	</script>
+

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/index.css" />
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<style type="text/css">
+			.mui-content>.mui-table-view:first-child {
+				margin-top: -1px;
+			}
+			html{
+				font-size: 10px;
+			}
+			.mui-bar-nav{
+			        background-color: #1F79CE;
+			        z-index: 999;}
+			.mui-title{color:#fff}
+			    a{color:#fff;}
+			.mui-bar-tab .mui-tab-item.mui-active {
+				color: #FFFFFF;background-color: #00B2EE;
+				}
+				.run .back{
+			    margin: 1rem;
+			}
+			.back i{
+			    font-size: 3rem;
+			    color: #00a0ff;
+			    margin: 0 1rem;
+			}
+			.back p {
+			    font-size: 2rem;
+			    color: #00a0ff;
+			}
+			.run .card .run_list{
+			    margin: 0 1rem ;
+			    border-bottom: .1rem grey solid;
+			}
+			.run .col-50 .h3{
+			    font-weight: 500;
+			}
+			.run .col-50{
+			    height: 9rem;
+			    padding-right: 1rem;
+			}
+			.run .col-40.tc{
+			    border-bottom: .1rem grey solid;
+			    height: 9rem;
+			}
+			.run .col-40.tc p{
+			    margin: .5rem 0;
+			    font-size: 1.5rem;
+			}
+			.blue_1{
+			    background-color: #00a0ff;
+			    box-shadow: 0rem 0rem 1rem #18b995;
+			}
+			.blue_2{
+			    background-color: #a6bdd3;;
+			}
+			
+			#bcid {
+			    width: 100%;
+			    position: absolute;
+			    top: 0px;
+			    bottom: 44px;
+			    text-align: center;
+			    background-color: #000000;
+			}
+			.tip {
+			    color: #FFFFFF;
+			    font-weight: bold;
+			    text-shadow: 0px -1px #103E5C;
+			}
+			footer {
+			    width: 100%;
+			    height: 44px;
+			    position: absolute;
+			    bottom: 0px;
+			    line-height: 44px;
+			    text-align: center;
+			    color: #FFF;
+			}
+			.fbt {
+			    width: 100%;
+			    height: 100%;
+			    background-color: #FFCC33;
+			    float: left;
+			}
+			.fbt:active {
+			    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+			    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+			}
+			
+			 input[type=text]{
+			 	     margin-bottom:0; 
+			 	     height: 4.9rem;
+			 }
+			
+			img{
+				width: 30px;
+			}
+			
+			.icon {
+			   width: 1em; 
+			   height: 1em;
+			   font-size:3rem;
+			   vertical-align: -0.15em;
+			   fill: currentColor;
+			   overflow: hidden;
+			}
+			.mui-scroll-wrapper {
+			    z-index: 2;
+			    top: 0;
+			    bottom: 0;
+			    left: 0;
+			    overflow: hidden;
+			    width: 100%;
+			}
+			.mui-card{
+				z-index: 5!important;
+			}
+			.input{
+				padding:10px 10px 0 10px;
+				background: #efeff4;
+				position: fixed;
+				width: 100%;
+				margin-top: 44px;
+				z-index: 12;
+			}
+			.mui-btn.mui-pull-right{
+				top: 5px;
+			}
+			#pullrefresh,#pullrefresh_1{
+				padding-top: 100px;
+			}
+			.run_top{
+				position: relative;
+			}
+			.run_top img{
+				position: absolute;
+			    top: 0.95rem;
+			    right: 1rem;
+			}
+			.run_top{
+				position: relative;
+			}
+			.run_top img{
+				position: absolute;
+				height: 2rem;
+				width: 2rem;
+				top: 1.5rem;
+			}
+			.run_top img:nth-child(1){
+				right: 1rem;
+			}
+			.run_top img:nth-child(2){
+				right: 6rem;
+			}
+			.run_top img:nth-child(3){
+				right: 3.5rem;
+			}
+			p.h4.white{
+				color:white
+			}
+			.blue_1{
+			    background-color: #00a0ff!important;
+			    box-shadow: 0rem 0rem 1rem #18b995;
+			}
+			.blue_2{
+			    background-color: #a6bdd3;;
+			}
+			.run_list {
+			    margin: 0 1rem;
+			    border-bottom: .1rem grey solid;
+			}
+
+		</style>
+		<link rel="stylesheet" href="../../css/index.css" />
+	</head>
+
+	<body id='mbody'>
+		<!--导航-->
+		<header  id="header" class="mui-bar mui-bar-nav">
+		      <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">医废追溯</h1>
+		</header>
+		<!--头部输入框-->
+			<div class=" input rowf ac be" style="">
+	            <div class="run_top col-100" >
+	            	<input type="text" class="run_input" v-model="input"  placeholder="请输入医废编号">
+	                <img class='search' src="../../images/search_search.png" alt="" />
+	                <img  src="../../images/search_line.png" alt="" />
+	                <img class='scan' src="../../images/search_scan.png" alt="" />
+	            </div>
+	        </div>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" v-show='isShow' class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<!--数据列表-->
+				
+		        <!--列表项-->
+				<div  style='padding: 10px;' class="mui-card rowf ac be"  v-for="num in List ">
+	                <div>
+	                    <p class="h4 run_1">编号： {{num.YfCode}}</p>
+	                    <p class="h4 run_2">病区： {{num.PartitionName}}</p>
+	                </div>
+	                <div>
+	                    <p class="h4 run_3 white">{{num.YfTypeName}}</p>
+	                    <p class="h4 run_3">{{num.YfTypeName}}</p>
+	                </div>
+	            </div>
+			</div>
+		</div>
+				<!--详情信息-->
+		<div v-show='!isShow' id="pullrefresh_1" v-cloak>
+	            <div class="mui-card" style='padding:10px;padding-bottom:0px' >
+	                <div class="rowf ac be run_list" >
+	                    <div>
+	                        <p class="h4 run_1">{{list.CompanyName}}</p>
+	                        <p class="h4 run_2">{{list.YfCode}}</p>
+	                    </div>
+	                    <div>
+	                        <p class="h4 run_3">{{list.PartitionName}}</p>
+	                        <p class="h4 run_3">{{list.YfTypeName}}</p>
+	                    </div>
+	
+	                </div>
+					<div class="rowf ac " style="margin-top:1rem;">
+	                    <div class="col-50 rowf M ac" style="position: relative;height:10rem;" >
+	                        <p class="h3" style="margin-top:-2.5rem;">医废出库</p>
+	                        <span :class="{ blue_1: list.OutTimeString,blue_2:true,}" style="width: 1rem;height: 1rem;border-radius: 50%;position: absolute;top:3rem;right: 2rem;z-index: 10"></span>
+	                        <span style="height: 11rem;width: .1rem;background-color: #ccc;position: absolute;top:3.5rem;right: 2.5rem;z-index: 1"></span>
+	                    </div>
+	                    <div class="col-40 tc rowf ac M" v-show="list.OutTimeString" style="color:#333;">
+	                        <div>
+	                            <p>{{list.OutTimeString}}</p>
+	                            <div >
+	                                <p class="rowf be">
+	                                    <span>出库人：</span>
+	                                    <span>{{list.OutStaffName}}</span>
+	                                </p>
+	                                <p class="rowf be">
+	                                    <span>重量：</span>
+	                                    <span>{{list.OutWeight}}</span>
+	                                </p>
+	                            </div>
+	                        </div>
+	
+	                    </div>
+	                </div>
+	                <div class="rowf ac "  >
+	                    <div class="col-50 rowf M ac" style="position: relative;height:9rem;" >
+	                        <p class="h3" style="margin-top:-2.8rem;">医废入库</p>
+	                        <span :class="{ blue_1: list.StorageTimeString,blue_2:true,}" style="width: 1rem;height: 1rem;border-radius: 50%;position: absolute;top:3rem;right: 2rem;z-index: 10"></span>
+	                        <span style="height: 10rem;width: .1rem;background-color:#ccc;position: absolute;top:3.5rem;right: 2.5rem;z-index: 1"></span>
+	                    </div>
+	                    <div class="col-40  rowf ac M" v-show="list.StorageTimeString" style="color:#333;margin-top: -1.5rem;">
+	                      <div>
+	                      <p>{{list.StorageTimeString}}</p>
+	                       <div >
+	                                <p class="rowf be">
+	                                    <span>入库人：</span>
+	                                    <span>{{list.StorageStaffName}}</span>
+	                                </p>
+	                                <p class="rowf be">
+	                                    <span>重量：</span>
+	                                    <span>{{list.StorageWeight}}</span>
+	                                </p>
+	                           
+	                            </div>
+	                    </div>
+	                    </div>
+	                </div>
+	                <div class="rowf ac " >
+	                    <div class="col-50 rowf M ac" style="position: relative;height:10rem;" >
+	                        <p class="h3" style="margin-top:-3rem;">医废交接</p>
+	                        <span :class="{ blue_1: list.TransTimeString,blue_2:true,}" style="width: 1rem;height: 1rem;border-radius: 50%;position: absolute;top:3rem;right: 2rem;z-index: 10"></span>
+	                        <span style="height: 13rem;width: .1rem;background-color: #ccc;position: absolute;top:3.5rem;right: 2.5rem;z-index: 1"></span>
+	                    </div>
+	                    <div class="col-40 rowf ac M" v-show="list.TransTimeString" style="color:#333;">
+	                       	<div>
+	                            <p>{{list.TransTimeString}}</p>
+	                            <div >
+	                                <p class="rowf be">
+	                                    <span>交接人：</span>
+	                                    <span>{{list.TransStaffName}}</span>
+	                                </p>
+	                                <p class="rowf be">
+	                                    <span>重量：</span>
+	                                    <span>{{list.TransWeight}}</span>
+	                                </p>
+	                            </div>
+	                        </div>
+	
+	                    </div>
+	                </div>
+	                <div class="rowf ac " >
+	                    <div class="col-50 rowf M ac" style="position: relative;height: 10rem" >
+	                        <p class="h3" style="margin-top:1.5rem;">医废打包</p>
+	                        <span :class="{blue_2:true, blue_1: list.PackTimeString}" style="width: 1rem;height: 1rem;border-radius: 50%;position: absolute;top:5.5rem;right: 2rem;z-index: 9"></span>
+	                    </div>
+	                    <div class="col-40  rowf ac M" v-show="list.PackTimeString" style="height: 9rem;border: none;color: #333;margin-top: 1.5rem;">
+		                    <div class="">
+		                        <p>{{list.PackTimeString}}</p>
+		                        <div >
+			                        <p class="rowf be">
+			                            <span>打包人：</span>
+			                            <span>{{list.PackStaffName}}</span>
+			                        </p>
+			                        <p class="rowf be">
+			                            <span>重量：</span>
+			                            <span>{{list.PackWeight}}kg</span>
+			                        </p>
+			                    </div>
+		                    </div>
+	                    </div>
+	                </div>
+	            </div>
+     
+        	</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+						
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style:'circle',
+						callback: pulldownRefresh
+					},
+					up: {
+						auto:true,
+						contentrefresh: '正在加载...',
+						callback: pullupRefresh
+					}
+				}
+			});
+			mui.plusReady(function(){
+				var self=plus.webview.currentWebview();	
+				if(self.code){
+					vm.input = self.code
+				}
+			})
+			
+			var vm = new Vue({
+	               el:'#mbody',
+	                data:{
+	                	list:[],
+	                	List:[],
+	                	people:[],
+	                	input:'',
+	                	arry:[],
+	                	index:'',
+	                	count_up:0,
+	                	PageIndex:'',
+	                	isShow:true
+	                },
+	                methods:{},
+	                watch:{}
+	                
+	       	});
+//	       	进入扫描
+			$('.scan').on('tap',function(){
+				mui.openWindow({
+			         url: 'saomiao.html', 
+			         id:'saomiao.html',
+			         show:{
+			            aniShow:'slide-in-right',
+			            duration:300
+			          },
+			         waiting:{
+			          autoShow:false
+			         }
+			    });
+			});
+//			进入搜索
+			$('.search').on('tap',function(){				
+				vm.count_up = 0;
+				vm.List= [];
+				pullupRefresh('search');
+				
+			});
+
+//			接收扫描出来的结果
+			function scaned(t, r, f){
+				vm.input=r;
+				vm.count_up = 0;
+				vm.List= [];
+				pullupRefresh('search');
+			};
+//			进入详情
+			$('.mui-scroll').on('tap','.mui-card',function(e){
+				vm.input = $(this).find('.run_1').text().split(' ')[1];
+				vm.isShow= false;
+				vm.index = $(this).index();
+				vm.list = vm.List[$(this).index()]			
+			})
+
+			/**
+			 * 上拉加载具体业务实现
+			 */	
+			function pullupRefresh(search) {
+				$.get(url_all+"/api/MobileV2/QueryRubbish?",
+					{ UserId:localStorage.getItem('MyUserId'),
+						PageIndex:vm.count_up,
+						PageSize:10,
+						Keyword:vm.input
+						},
+				  function(data){
+				  	mui('#pullrefresh').pullRefresh().refresh(true);
+				  	switch (data.data.length){
+						case 0:						
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(true); //参数为true代表没有更多数据了。
+					  		vm.isShow=true;						
+						break;
+						
+						case 1:
+							if(search =='search' || plus.webview.currentWebview().code){
+								vm.isShow=false;
+					  			vm.list = data.data[0];	
+							}else{
+								vm.List= vm.List.concat(data.data);
+//					  			mui('#pullrefresh').pullRefresh().endPullupToRefresh(true); //参数为true代表没有更多数据了。
+							};
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(true); //参数为true代表没有更多数据了。
+						break;
+						
+						default:
+							//检测是否是使用了搜索图标搜索
+					  		if(search =='search'){
+					  			vm.List= data.data;
+					  		}else{
+					  			vm.List= vm.List.concat(data.data);
+					  		}	
+	//				  		核对数据能否再次请求
+					  		if(data.data.length<10){	
+					  			mui('#pullrefresh').pullRefresh().endPullupToRefresh(true); //参数为true代表没有更多数据了。
+					  		}else{
+					  			mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+					  		}
+					  		vm.isShow=true;
+					}
+
+				  }
+				);
+				vm.count_up++;
+			}
+
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				vm.isShow = true;
+				vm.count = 0;				  
+				vm.list=[];
+				vm.arry=[];
+				mui('#pullrefresh').pullRefresh().refresh(true);
+				$.get(url_all+"/api/MobileV2/QueryRubbish?",
+					{ UserId:localStorage.getItem('MyUserId'),
+						PageIndex:vm.count,
+						PageSize:10,
+						Keyword:vm.input},
+				  function(data){
+						vm.List= data.data;
+							vm.List.forEach(function(item){
+								vm.arry.push(item.YfCode);
+							});
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+						mui.toast("更新了");
+				  }
+				);
+				vm.count_up = 1; 
+
+			};
+
+
+		</script>
+	</body>
+
+</html>

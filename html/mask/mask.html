@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  		<meta Name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta Name="apple-mobile-web-app-capable" content="yes">
+		<meta Name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <title>Document</title>
+  <link rel="stylesheet" type="text/css" href="../../css/index.css"/>
+  <link rel="stylesheet" type="text/css" href="../../css/mui.css"/>
+  <style type="text/css">
+  	html{
+  		font-size: 10px;
+  	}
+  	html,body{
+  		padding: 0;
+  		margin: 0;
+  	}
+	.wrap-menu { overflow:auto; 100%; background:#F6F6F6; font:1.5rem Tahoma,Arial,sans-serif}
+	.wrap-menu ul{ list-style:none; margin:0; padding:0;}
+	.wrap-menu ul li{ text-indent:3em; white-space:nowrap; }
+	.wrap-menu ul li h2{ cursor:pointer; height:100%; width:100%; margin:0 0 1px 0;padding: 1rem 0; font:2rem '宋体'; color:#fff; background:red;}
+	.wrap-menu ul li a{ display:block; outline:none; height:3.5rem; line-height:3.5rem; margin:1px 0; color:#1A385C; text-decoration:none;}
+	.wrap-menu ul li img{ vertical-align: top;margin-right:1rem; margin-left:-1.7rem; margin-top: 1rem; width:0.7rem; height:0.7rem; background:url('../../images/arrow.gif') no-repeat; }
+	.wrap-menu ul li img.unfold{ background-position:0 -9px;}
+      #hidden{
+          position: absolute;
+          width: 100%;
+          height: 80%;
+          background-color: aqua;
+          display: none;
+      }
+    #hidden>div{
+        width: 100%;
+        height: 300px;
+        background-color: #cccccc;
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+    .bottom{
+		position: fixed;
+		bottom: 0rem;
+		right: 0;
+		width: 100%;
+		background-color: #efeff4;
+	}
+	.bottom div{
+		width: 6rem;
+		background-color: lightgray;
+		color: white;
+		height: 4rem;
+		
+	}
+	.bottom div.b_active{
+		background-color:#4cd964 ;
+	}
+	.listActive{
+		color: white;
+	    background-color:#007aff!important;
+	}
+	.hidden{
+		display: none;
+	}
+  </style>
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/index.js"></script>
+	<script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-3.0.0.min.js"></script>
+ 	<script src="index.js"></script>	 	
+ </head>
+ <body>
+ 	<div class="mui-content">
+ 	    <div class="wrap-menu">		
+		</div>
+		<div class="rowf R M bottom">
+			<div class="rowf M ac" id='cancel'>重置</div>
+			<div class="rowf M ac b_active" id='sure'>确定</div>
+			
+		</div>
+ 	</div>
+	
+	<script>
+		mui.init({
+			swipeBack:true, //启用右滑关闭功能
+			beforeback:function(){
+			    plus.webview.getWebviewById(plus.webview.currentWebview().webViewId).setStyle({mask:"none"});
+
+		    }
+		});
+		var vm = new Vue({
+				el: '.mui-content',
+				data: {
+					testMenu:[],
+					pid:'',
+					name:''
+				},
+				methods:{}
+			});
+
+	
+		
+		$(function(){
+			$.get(url_all+"/api/MobileV2/QueryPartition?",
+				{ UserId:localStorage.getItem('MyUserId')
+				},
+			  function(data){				
+				vm.testMenu = data.data;
+				new AccordionMenu({menuArrs:vm.testMenu});
+			  }
+			);
+				
+		}); 
+		$('.mui-content').on('tap','li',function(e){
+				$('.listActive').each(function(item){
+					$(this).removeClass('listActive');
+				});
+				if($(this).children('h2').text()){
+					$(this).children('h2').addClass('listActive');
+					vm.pid = $(this).children('h2').find('span').text();
+					vm.name = $(this).children('h2').text();
+					console.log($(this).children('h2').find('span').text())
+				}else{
+					$(this).children('a').addClass('listActive');
+					vm.pid = $(this).children('a+span').text();
+					vm.name = $(this).children('a').text();
+				}
+				e.stopPropagation();								
+			});
+		document.getElementById("sure").addEventListener('tap',function(){
+			console.log(vm.pid)
+			console.log(vm.name)
+			$(this).parent().children().removeClass('b_active');
+			$(this).addClass('b_active');
+			plus.webview.currentWebview().close();
+			plus.webview.getWebviewById(plus.webview.currentWebview().webViewId).setStyle({mask:"none"});
+			mui.fire(plus.webview.getWebviewById(plus.webview.currentWebview().webViewId),'showData',{id:vm.pid,name:vm.name});
+			
+		});
+		document.getElementById("cancel").addEventListener('tap',function(){
+			vm.pid='';
+			vm.name='';
+			$('.listActive').each(function(item){
+				$(this).removeClass('listActive');
+			});
+			$(this).parent().children().removeClass('b_active');
+			$(this).addClass('b_active');
+		});
+
+	</script>
+ </body>
+</html>

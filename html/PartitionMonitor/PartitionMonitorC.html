@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link href="../../css/index.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/LCalendar.css">
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-btn {
+				font-size: 16px;
+				padding: 8px;
+				margin: 3px;
+			}
+			h5.mui-content-padded {
+				margin-left: 3px;
+				margin-top: 20px !important;
+			}
+			h5.mui-content-padded:first-child {
+				margin-top: 12px !important;
+			}
+			.ui-alert {
+				text-align: center;
+				padding: 20px 10px;
+				font-size: 16px;
+			}
+			.mui-bar-nav{
+	    	background-color: #1F79CE;}
+			.mui-title{color:#fff}
+	   		 a{color:#fff;}
+	   		input[type=text]{
+	   			margin-bottom: 0;
+	   			padding:0
+	   		}
+
+			.homeP_1top0 {
+				width: 100%;
+			    z-index: 10;
+				padding: 1rem;
+			    background-color: white;
+			}
+
+			.mui-popover{
+				height: 300px;
+			}
+			.ward{
+				margin: 2rem;
+			}
+			.top_a {
+			    width: 100%;
+			    padding: 1.5rem;
+			    font-size: 1.8rem;
+			    text-align:center
+			}
+			.highcharts-button-box{
+				display: none;
+			}
+			.highcharts-title{
+				display: none;
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">楼层监控</h1>
+		</header>
+		<div class="mui-content">
+			<!--选择日期-->
+            <div class="rowf ar M homeP_1top0">
+                <div class="col-33  rowf ac L" @click="subtract()">
+                    <span class=" mui-icon mui-icon-arrowleft subtract"></span>
+                    <p class="h4 subtract">前一天</p>
+                </div>
+                <div class="col-33 rowf ac M">
+                    <input v-model="input" class="tc " id="demo1" type="text" readonly="readonly" placeholder="日期"  />
+                </div>
+                <div class="col-33 rowf ac R " @click="add()">
+                    <p class="h4 last">后一天</p>          
+                    <span class=" mui-icon mui-icon-arrowright last"></span>
+                </div>
+
+            </div>
+			<div class="mui-content-padded">
+				<!--图表项-->
+				<div  class="mui-control-content mui-active" >
+						<div class='pic_top' style="display: block;background-color: white;height: 11rem;">
+							<div  style="" class="rowf M top_a">
+								{{codeId_name}}医废产量报表
+							</div>
+                            <ul class="rowf  M ">
+                                <li class="span_mid rowf be">
+                                    <p ></p>
+                                    <span>已交接&nbsp;(袋)</span>
+                                </li>
+                                <li class="span_mid2 rowf be" >
+                                    <p ></p>
+                                    <span>未交接&nbsp;(袋)</span>
+                                </li>
+                            </ul>
+                            <div class="rowf M ac prompt">温馨提示：点击以下科室名称可查看详细信息</div>
+						</div>
+		
+						<div id="scroll" class="mui-scroll-wrapper pic" style="overflow-y:scroll ;">
+							<div class="mui-scroll">
+								<!--图表-->
+		                    	<div class="chart" id="pieChart"  v-show="noInformation"></div>
+		                    	<div class="noInformation rowf M ac" v-show="!noInformation">暂无信息</div>
+							</div>
+						</div>
+				</div>
+				
+			</div>
+
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/index.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../libs/highcharts.js"></script>
+		<script src="../../libs/exporting.js"></script>
+		<script src="../../js/LCalendar.js"></script>
+		<script type="text/javascript" src="../../js/time.js"></script>
+		<script>
+			mui.init();
+			mui.plusReady(function(){
+	            var self = plus.webview.currentWebview();	
+	            vm.codeId = self.code;
+	            vm.input = self.pretime;
+	            vm.codeId_name = self.eName; 
+//	 			alert(vm.input+'jinru')
+	        });
+			//日期
+			var calendar = new LCalendar();
+	        calendar.init({
+		            'trigger': '#demo1', //标签id
+		            'type': 'date', //date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择,
+		            'minDate': '2017-5-1', //最小日期
+		            'maxDate': new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate() //最大日期
+		    });
+
+			$('.last').css("color","#808080");
+
+				var vm = new Vue({
+	                el:'.mui-content',
+	                data:{
+						input:'',
+	                    codeId:'',
+	                    Transed:[],
+						NotTrans:[],
+	                    codeId_name:'',
+						Name:[],
+						List:[],
+						noInformation:0,
+	                },
+					methods:{
+//		                	增加天数
+	                	add:function(){
+	                		if(moment(this.input).isBefore(moment().format("YYYY-MM-DD"))){
+				                this.input=moment(this.input).add(1, 'd').format("YYYY-MM-DD");
+				            }else{
+				                this.input=moment().format("YYYY-MM-DD");
+				                $('.last').css("color","#808080");
+				            };
+				            if((this.input) == moment().format("YYYY-MM-DD")){
+				                $('.last').css("color","#808080");
+				            };
+
+	               
+	                	},
+//		                	减少天数
+	                	subtract:function(){
+	                		this.input=moment(this.input).subtract(1, 'd').format("YYYY-MM-DD");
+	                		if(moment(this.input).isBefore(moment().format("YYYY-MM-DD"))){
+				                $('.last').css("color","#1F79CE");
+				            }else{
+				                $('.last').css("color","#808080");
+				            };
+
+
+	                	},
+//	                	获取图表数据
+	                	chart:function(input){
+	                		that=this;
+	                		that.noInformation=0;
+							$.get(url_all+"/api/MobileV2/GetPartitionMonitor?",
+								{ UserId:localStorage.getItem('MyUserId'),
+									PartitionId:vm.codeId,
+									Date:input
+								},
+							  function(data){
+								  	that.Transed = [];
+									that.NotTrans=[];
+									that.Name = [];
+									that.List = data.data;
+									console.log(JSON.stringify(that.List))
+									that.List.map(function(item,index){
+										that.noInformation+=1;
+										that.Transed.push(item.Transed);
+										that.NotTrans.push(item.NotTrans);
+										that.Name.push(item.Name);
+									});
+									$('#scroll').height(($(window).height()-64-44-108-10)+'px');
+				                	$('#pieChart').height(((that.Name.length)*5+10)+'rem');
+				                	console.log(that.Name,that.NotTrans,that.Transed)
+				                	setTimeout(function(){
+					                	that.getData('#pieChart',that.Name,that.NotTrans,that.Transed);
+					                },200)
+									console.log(that.List)
+							  }
+							);
+	                	},
+//	                	图表生成
+	                	getData:function (id,a,b,c) {
+					            Highcharts.setOptions({
+					                colors: [' #ff8635','#1f79ce','#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4']
+					            });
+				            	jQuery(id).highcharts({
+				                chart: {
+						            type: 'bar'
+						        },
+						        title: {
+						            text: '堆叠条形图'
+						        },
+						        xAxis: {
+						            categories: a
+						        },
+						        yAxis: {
+						            min: 0,
+						            title: {
+						                text: '水果消费总量'
+						            }
+						        },
+						        legend: {
+						            reversed: true
+						        },
+						        plotOptions: {
+						            series: {
+						                stacking: 'normal'
+						            }
+						        }, 
+						        series: [{
+						            name: '未交接',
+						            data: b
+						        },{
+						            name: '已交接',
+						            data: c
+						        }]
+				            });
+				        }
+//		                
+	                },
+	                watch:{
+		                	input:{
+		                		handler:function(){
+		                			this.chart(this.input);
+		                			if((this.input) == moment().format("YYYY-MM-DD")){
+						                $('.last').css("color","#808080");
+						            }else{
+						            	$('.last').css("color","#1F79CE");
+						            };
+		                		}
+		                	}
+
+		            }
+				});
+
+			
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<style>
+	html{
+		font-size: 10px;
+	}
+	.mui-bar-nav{
+        background-color: #1F79CE;}
+	.mui-title{color:#fff}
+	    a{color:#fff;}
+	.mui-bar-tab .mui-tab-item.mui-active {
+		color: #FFFFFF;background-color: #00B2EE;}
+	.mui-table-view .mui-media-object.mui-pull-left {
+	    margin-right: 10px;
+	    margin-top: 1.3rem;
+	}
+	.mui-bar .mui-title{
+		text-align: left;
+	}
+	.title{
+		white-space: normal;
+		 width: 100%;
+		 overflow: hidden;
+		 margin-left:1rem;
+		 font-family: '微软雅黑';
+		 color: #333;
+		 font-weight: 500;
+		 text-overflow:ellipsis;
+	}
+	#remindSum{
+		position: relative;
+	}
+	.read{
+		position: absolute;
+		top:0;
+		right: 0;
+		width: 3rem;
+	}
+</style>
+
+	</head>
+	<body>
+		<header  id="header" class="mui-bar mui-bar-nav">
+		      <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">要闻通知</h1>
+		</header>
+	<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+		        <ul class="mui-table-view">
+					<li class="mui-table-view-cell mui-media" v-for = 'num2 in list'  @click="list_go($index,$event)">
+		
+							<img style="width: 2rem;height: 1.7rem;" class="mui-media-object mui-pull-left" src="../../images/tz.png.png">
+							<div class="mui-media-body">
+								<p class='title' >{{num2.Title.substr(0, 20)}}</p>
+			                    <p class='mui-ellipsis' style=" text-indent:1rem;color: #909090;">
+			                        <span >{{num2.msgStatus}}</span>
+			                        <span class="mal15">{{num2.LastUpdateTimeString.split(' ')[0]}}</span>
+			                        <span class="mal15">{{num2.LastUpdateTimeString.split(' ')[1]}}</span>
+			                        <span class="ID" style="display: none;">{{num2.YfInfoId}}</span>
+			                   </p>
+								<img v-show="!num2.HadRead" class='read' src="../../images/read.jpg" alt="" />
+							</div>
+					
+					</li>
+				</ul>
+				
+			</div>
+		</div>
+		
+	</body>
+
+</html>
+<script src="../../js/mui.min.js"></script>
+<script src="../../js/jquery-3.0.0.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style:'circle',
+						callback: pulldownRefresh
+					},
+					up: {
+						contentrefresh: '正在加载...',
+						contentnomore:'没有更多数据了',
+						callback: pullupRefresh
+					}
+				},
+				beforeback: function() {  
+			    //获得列表界面的webview  
+			    var list = plus.webview.currentWebview().opener();  
+			    //触发列表界面的自定义事件（refresh）,从而进行数据刷新  
+			    mui.fire(list, 'refresh');  
+			    //返回true，继续页面关闭逻辑  
+			    return true;  
+			    } 
+			});
+
+			var vm = new Vue({
+		               el:'#pullrefresh',
+		                data:{
+		                	list:[],
+		                	count:'1',
+		                	code:[],
+		                	codeId:'',
+		                	count_up:0,
+		                	title:''
+		                },
+		                methods:{
+		                	list_go:function(index,e){
+		                		that =this;
+		                		that.codeId =$(e.currentTarget).find('.ID')[0].innerHTML;
+		                		that.title = $(e.currentTarget).find('.title').text();
+								$(e.currentTarget).find('.read').css('display','none');
+							    mui.fire(plus.webview.getWebviewById('homePage.html'),"pageflowrefresh",{id:'that.codeId'});
+		                		mui.openWindow({
+							         url: 'InfoC.html', 
+							         id:'InfoC',							         
+							         extras:{
+					                    code:that.codeId,
+					                    title:that.title
+					               	},
+							         show:{
+							            aniShow:'slide-in-right',
+							            duration:300
+							          },
+							         waiting:{
+							          autoShow:false
+							         }
+							    });
+
+		                	}
+		                }
+	        		});
+
+			function pullupRefresh() {
+				setTimeout(function() {
+					$.get(url_all+"/api/MobileV2/QueryInfo?",
+						{ UserId:localStorage.getItem('MyUserId'),
+							PageIndex:vm.count_up,
+							PageSize:10 },
+					  function(data){
+					    if(data.data!=''){
+							vm.list= vm.list.concat(data.data);
+							console.log(JSON.stringify(vm.list))
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+						}else{
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(true); //参数为true代表没有更多数据了。
+						}
+					  }
+					);
+					vm.count_up++;
+				}, 1500);
+				
+			}
+//			上拉刷新
+			function pulldownRefresh() {
+				vm.count = 0;
+				vm.list=[];
+//				alert('d')
+				mui('#pullrefresh').pullRefresh().refresh(true);
+				$.ajax({
+					url: url_all+"/api/MobileV2/QueryInfo?",		 
+					dataType: 'json',
+					data:{
+						UserId:localStorage.getItem('MyUserId'),
+						PageIndex:vm.count,
+						PageSize:10
+					},
+					method: 'get',
+					success: function(data) {
+						vm.list= data.data;
+						console.log(vm.list)
+					},
+					error: function(xhr) {
+				
+					}
+				});
+				mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+				mui.toast("更新了");
+			}	
+
+			if (mui.os.plus) {
+				mui.plusReady(function() {
+					setTimeout(function() {
+						mui('#pullrefresh').pullRefresh().pullupLoading();
+					}, 1000);
+
+				});
+			} else {
+			mui.ready(function() {
+					mui('#pullrefresh').pullRefresh().pullupLoading();
+				});
+			};
+
+			
+		</script>

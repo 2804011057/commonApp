@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title></title>
+	</head>
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/index.css">
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-bar .mui-title{
+				text-align: center;
+			}
+			.mui-input-group {
+			    position: relative;
+			    padding: 0;
+			    border: 0;
+			    background-color: #fff;
+			    width: 100%;
+			    padding:1rem;
+					
+			}
+			.mui-input-row.right label{
+				float: right;
+			}
+			.mui-btn{
+				width: 90%;
+			    margin: 1rem 5%;
+			    height: 4rem;
+			    background-color: #396d9f;
+			    color: white;
+			}
+			.mui-input-row label{
+				 line-height: 1.7;
+				 border:none
+
+			}
+			.mui-input-group .mui-input-row {
+			    height: 50px;
+			    border:none;
+			}
+			.code {
+			        /* background: url(code_bg.jpg); */
+			    font-family: Arial;
+			    font-style: italic;
+			    color: blue;
+			    font-size: 30px;
+			    line-height: 40px;
+			    border: 0;
+			    /* padding: 2px 3px; */
+			    letter-spacing: 3px;
+			    font-weight: bolder;
+
+			}
+			.mui-input-row label~input {
+			    padding: 10px;
+			    border: none;
+			    height: 50px;
+			    line-height: 50px;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			    color: white;
+			}
+			.mui-title {
+			    color: #fff;
+			}
+			a {
+			    color: #fff;
+			}
+			/*//////////////////*/
+			.mui-input-group input{
+			    border: none;
+			    height: 40px;
+			    margin-bottom: 0;
+			    color: #333333;
+			}
+			input.mui-input-clear:focus{
+				border: none;color: #396d9f;}//光标颜色
+			#content .mui-input-group:nth-child(1){
+				margin-top: .5rem;
+			}
+									
+		</style>
+	<body>
+		<!--导航栏-->
+		<header  id="header" class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">找回密码</h1>
+		</header>
+		<div class="mui-content" id='content'>
+		    
+			<form class="mui-input-group">
+			    <div class="rowf be text_center">
+			    	<span class="col-30 rowf ac M">单位编码：</span>
+			        <input type="text" class="mui-input-clear col-60" v-model='unitCoding'  placeholder="请输入单位编码">
+			    </div>
+			</form>
+			<form class="mui-input-group">
+			    <div class="rowf be text_center">
+			    	<span class="col-30 rowf ac M">账号：</span>
+			        <input type="text" class="mui-input-clear col-60" v-model='num'  placeholder="请输入账号">
+			    </div>
+			</form>
+			<form class="mui-input-group">
+			    <div class="rowf be">
+			    	<span class="col-30 rowf ac M">验证码：</span>
+			    	<div class="col-60 rowf be">
+			    		<input type="text" class="mui-input-clear col-50" placeholder="请输入" v-model ='pass'>	
+			        	<div class="code col-40" id="checkCode" @click="createCode()" ></div>
+			    	</div>
+			        
+			    </div>
+			</form>
+			<button type="button" class="mui-btn" @click = 'forget()'>下一步</button>
+
+		</div>
+	</body>
+</html>
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/jquery-3.0.0.min.js"></script>
+	<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="../../js/vue.js"></script>
+
+	<script type="text/javascript">
+		mui.init();
+		
+   		var vm = new Vue({
+		       	el:'#content',
+		        data:{
+		        	num:localStorage.getItem('name'),
+		        	pass:'',
+		        	code:'',
+		        	name:'',
+		        	nextCode:'',
+		        	phone:'',
+		        	show:false,
+		        	unitCoding:localStorage.getItem('code')
+		        },
+		        methods:{
+		        	forget:function(){
+		        		if (this.pass.length <= 0 ||this.num.length<=0 ) 
+				            {
+				                mui.toast("账号或验证码不能为空！");
+				            }
+				            else if (this.pass.toUpperCase() != this.code.toUpperCase()) 
+				            {
+				                mui.toast("验证码输入有误！");
+//				                this.createCode();
+				            }
+				            else 
+				            {       
+				                that = this;
+				                //进入下一级
+			            		mui.openWindow({
+							        url: 'forget_2.html', 
+							        id:'forget_2',
+									extras:{
+					                    
+				               		},
+							        show:{
+							            aniShow:'slide-in-right',
+							            duration:300
+							          },
+							        waiting:{
+							          autoShow:false
+							    	}
+							    });
+
+				            }; 
+		        		
+		        	},
+		        	createCode:function(){
+		        		code = "";
+			            var codeLength = 4; //验证码的长度
+			            var checkCode = document.getElementById("checkCode");
+			            var codeChars = new Array( 
+			            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+			            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'); //所有候选组成验证码的字符，当然也可以用中文的
+			            for (var i = 0; i < codeLength; i++) 
+			            {
+			                var charNum = Math.floor(Math.random() * 52);
+			                code += codeChars[charNum];
+			            }
+			            if (checkCode) 
+			            {
+			                checkCode.className = "code";
+			                checkCode.innerHTML = code;
+			                this.code = code;
+			            }
+		        	}
+		
+		        }
+			});
+
+		vm.createCode();
+	</script>

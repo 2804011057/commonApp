@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title></title>
+	</head>
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/index.css">
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-bar .mui-title{
+				text-align: center;
+			}
+			.mui-input-group {
+			    position: relative;
+			    padding: 0;
+			    border: 0;
+			    background-color: #fff;
+				height: 62px;
+    			padding: 10px;
+			}
+			.mui-btn.msg{
+				width: 12rem;
+				height: 40px;
+				padding: 0 .5rem;
+				background-color: #396d9f;
+				color:white;
+			}
+			.mui-btn.msgChange{
+				width: 12rem;
+				height: 40px;
+				padding: 0 .5rem;
+				background-color: #dfe5ee;
+				color:#716969;
+				border: none;
+			}
+			.mui-input-row.right label{
+				float: right;
+			}
+			.mui-btn.next{
+				width: 90%;
+			    margin: 1rem 5%;
+			    height: 4rem;
+			    background-color: #396d9f;
+			    color: white;
+			}
+			.mui-input-row label{
+				 line-height: 1.7;
+				 border:none
+
+			}
+			.mui-input-row label~input{
+				padding: 10px;
+			    border: none;
+			    height: 50px;
+			    line-height: 50px;
+
+			}
+			.mui-input-group .mui-input-row {
+			    height: 50px;
+			    border-left: 1px solid gainsboro;
+			    border-right: 1px solid gainsboro;
+			}
+			.top{
+				width: 100%;
+			    margin-top: .5rem;
+			    margin-bottom: .5rem;
+			    background-color: white;
+			    color: #333333;
+			    padding: .5rem 0;
+			}
+			.top p{
+				color: #333333;
+				font-size: 2rem;
+				margin: 1rem;
+			}
+			input[type=text]{
+				height: 50px;
+			}
+			.mui-content{
+				width: 100%;
+			}
+			.mui-btn{
+				padding: 6px 0;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			    color: white;
+			}
+			.mui-title {
+			    color: #fff;
+			}
+			a {
+			    color: #fff;
+			}
+			/*///////////////*/
+			.mui-input-group input{
+			    border: 1px #dfd5d5 solid;
+			    height: 40px;
+			    margin-bottom: 0;
+			    color: #333333;
+			}
+			input.mui-input-clear:focus{
+				border: 1px #396d9f solid;
+				color: #396d9f;
+			}
+			#content .mui-input-group:nth-child(1){
+				margin-top: 5rem;
+			}
+			.remark p{
+				margin: 1rem;
+				color:#716969;
+			}
+						
+		</style>
+	<body>
+		<!--导航栏-->
+		<header  id="header" class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">找回密码</h1>
+		</header>
+		<div class="mui-content" id='content'>
+		    <div class="top">
+		    	<p class="tc">您正在通过以下手机找回密码</p>
+		    	<p class="tc">{{phone}}</p>
+		    </div>
+		    <form class="mui-input-group">
+			    <div class="rowf be">
+			        <input type="text" class="mui-input-clear col-60" placeholder="请输入内容" v-model ='pass'>	
+			        <button id='btnTime' type="button" class="mui-btn  msg col-30" @click= 'get()'><span v-show='!show'>获取短信验证码</span><span v-show='show'>{{time}}后重新获取</span></button>
+
+			    </div>
+			</form>
+			<form class="mui-input-group">
+			    <div class="">
+			        <input type="text" class="mui-input-clear" v-model='newPass' placeholder="请设置新的密码"  onkeyup="this.value=this.value.replace(/[^\w_]/g,'');" maxlength="20" >
+			    </div>
+			</form>
+			<div class="remark">
+				<p>备注：请将密码设置为6-20位，并且由字母数字构成。
+		    	</p>
+			</div>
+			
+			<div class="rowf ac M">
+				<button type="button" class="mui-btn next" @click = 'forget()'>完成</button>
+			</dvi>
+		</div>
+	</div>
+	</body>
+</html>
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/jquery-3.0.0.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="../../js/vue.js"></script>
+	<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		mui.init();            
+   		var vm = new Vue({
+		       	el:'#content',
+		        data:{
+		        	num:'',
+		        	pass:'',
+		        	name:'',
+		        	nextCode:'',
+		        	phone:localStorage.getItem('Mobile'),
+		        	time:60,
+		        	show:false,
+		        	newPass:''
+		        },
+		        methods:{
+		        	
+		        	forget:function(){		        		
+		        		that = this;
+		        		if(that.newPass.length<6){
+		        			mui.toast('长度不够')
+		        			return
+		        		}
+		        		$.ajax({
+							url: url_all+"/api/MobileV2/ModifyPassword?",		 
+							dataType: 'json',
+							data:{
+								CompanyCode:localStorage.getItem('code'),
+								Username:localStorage.getItem('name'),
+								NewPassword:that.newPass,
+								CheckCode:that.pass
+							},
+							method: 'get',
+							success: function(data) {
+								mui.toast('密码修改成功');
+//									进入下一级
+			            		mui.openWindow({
+							        url: 'login.html', 
+							        id:'login',
+									extras:{
+					                    
+				               		},
+							        show:{
+							            aniShow:'slide-in-right',
+							            duration:300
+							          },
+							        waiting:{
+							          autoShow:false
+							    	}
+							    });
+							},
+							error: function(xhr) {
+								mui.toast('验证码错误');
+							}
+						});	
+		        		
+		        	},
+		        	get:function(){
+		        		that = this;
+		        		that.time=60;
+		        		var T = setInterval(function(){
+				        			that.time--;
+//				        			console.log(that.time);
+				        			if(that.time>0){
+				        				that.show=true;
+				        				$("#btnTime").attr("disabled", true);
+				        				$("#btnTime").attr("class", 'mui-btn  msgChange col-30');
+				        			}else{
+				        				that.show=false;
+				        				that.time = '';
+				        				clearInterval(T);
+				        				$("#btnTime").attr("disabled", false);
+				        				$("#btnTime").attr("class", 'mui-btn  msg col-30');
+				        				
+				        			}
+				        		},1000);
+				       //发送手机号  返回验证码；
+				       $.ajax({
+							url: url_all+"/api/MobileV2/ForgetPassword?",		 
+							dataType: 'json',
+							data:{
+								CompanyCode:localStorage.getItem('code'),
+								Username:localStorage.getItem('name')
+							},
+							method: 'get',
+							success: function(data) {
+								
+							},
+							error: function(xhr) {
+						
+							}
+						});
+
+		        	}
+		
+		        }
+			});
+
+	</script>
+

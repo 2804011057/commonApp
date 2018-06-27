@@ -1,0 +1,40 @@
+{
+		"status": "0",
+		"message": "OK",
+		"total": 3,
+		"rowCount": 3,
+		"data": [{
+			"YfAlarmRecId": 3,
+			"YfRubbishId": 11,
+			"YfCode": "Huashan20180515011",
+			"PartitionId": 9,
+			"PartitionName": "1楼",
+			"YfTypeName": "损伤性废物",
+			"YfAlarmRecType": "YfAlarmRecType_TransDelayYellow",
+			"PackTime": "2018-05-15 12:48",
+			"DelayTime": "217.6小时",
+			"HadSentMsg": false
+		}, {
+			"YfAlarmRecId": 4,
+			"YfRubbishId": 12,
+			"YfCode": "Huashan20180515012",
+			"PartitionId": 9,
+			"PartitionName": "1楼",
+			"YfTypeName": "药物性废物",
+			"YfAlarmRecType": "YfAlarmRecType_TransDelayYellow",
+			"PackTime": "2018-05-15 12:48",
+			"DelayTime": "217.6小时",
+			"HadSentMsg": false
+		}, {
+			"YfAlarmRecId": 5,
+			"YfRubbishId": 13,
+			"YfCode": "Huashan20180515013",
+			"PartitionId": 9,
+			"PartitionName": "1楼",
+			"YfTypeName": "病理性废物",
+			"YfAlarmRecType": "YfAlarmRecType_TransDelayRed",
+			"PackTime": "2018-05-15 12:48",
+			"DelayTime": "217.6小时",
+			"HadSentMsg": false
+		}]
+	}
