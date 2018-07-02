@@ -310,7 +310,7 @@
 										that.List.map(function(item,index){
 											that.noInformation+=item.Count;
 											that.Count.push(item.Count);
-											that.Sum.push(item.Sum);
+											that.Sum.push(Number(item.Sum.toFixed(2)));
 											that.Name.push(item.YfTypeName);
 										});
 //										图表生成

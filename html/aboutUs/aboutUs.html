@@ -113,18 +113,21 @@
 	        vm.about();
 	        mui('#header').on('tap','.mui-btn',function(){
 	        	var curr = plus.webview.currentWebview();
-				mui.openWindow({
-			         url: '../login/login.html', 
-			         id:'login',				         			        
-			         show:{
-			            aniShow:'slide-in-right',
-			            duration:300
-			          },
-			         waiting:{
-			          autoShow:false
-			         }
-			    });
-			    curr.close();
+	        	curr.close();
+//	        	localStorage.clear();
+                plus.runtime.restart();
+//				mui.openWindow({
+//			         url: '../login/login.html', 
+//			         id:'login',				         			        
+//			         show:{
+//			            aniShow:'slide-in-right',
+//			            duration:300
+//			          },
+//			         waiting:{
+//			          autoShow:false
+//			         }
+//			    });
+			    
 	        })
 	        mui('.mui-content').on('tap', '.mui-btn', function(e) {
 	            mui('.mui-content .mui-btn').button('loading');
