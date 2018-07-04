@@ -291,10 +291,10 @@
 		$('.mui-table-view.info').height(vm.height+'px')
 //		进入模块
 		$('.mui-table-view-cell').on('tap',function(){
-			if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
-					plus.nativeUI.toast("当前网络异常，请检查后重试");
-					return;
-			}
+//			if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+//					plus.nativeUI.toast("当前网络异常，请检查后重试");
+//					return;
+//			}
 			var html = $(this).find('a').attr('class');
       			mui.openWindow({
 			         url: 'html/'+html+'/'+html+'.html', 
