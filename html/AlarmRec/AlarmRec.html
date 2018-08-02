@@ -290,24 +290,24 @@
 
 					
 			//			点击进入详情页
-			mui('.mui-table-view').on('tap','.mui-table-view-cell',function(e){
-				var code=this.querySelectorAll("span")[3].innerHTML;
-				console.log(JSON.stringify(vm.arry))
-	    		mui.openWindow({
-			         url: '../Search/Search.html', 
-			         id:'Search',
-			         extras:{	
-	                    code:code
-	               },
-			         show:{
-			            aniShow:'slide-in-right',
-			            duration:300
-			          },
-			         waiting:{
-			          autoShow:false
-			         }
-			    });
-			});
+//			mui('.mui-table-view').on('tap','.mui-table-view-cell',function(e){
+//				var code=this.querySelectorAll("span")[3].innerHTML;
+//				console.log(JSON.stringify(vm.arry))
+//	    		mui.openWindow({
+//			         url: '../Search/Search.html', 
+//			         id:'Search',
+//			         extras:{	
+//	                    code:code
+//	               },
+//			         show:{
+//			            aniShow:'slide-in-right',
+//			            duration:300
+//			          },
+//			         waiting:{
+//			          autoShow:false
+//			         }
+//			    });
+//			});
 			
 			
 		</script>

@@ -118,7 +118,7 @@
 		    		<div class="col-20 weight">KG</div>
 		    	</li>
 		    	<li>
-		    		<button @click='submit'   type="button" class="mui-btn mui-btn-warning mui-btn-block " disabled='{{barCode.length==0}}'>
+		    		<button @click='submit'   type="button" class="mui-btn mui-btn-warning mui-btn-block " disabled='{{barCode.length==0 || barCode=="请先点击扫描按钮"}}'>
 						提交 
 					</button>
 		    	</li>
@@ -131,12 +131,7 @@
 		<script src="../../js/vue.js"></script>
 		<script src="../../js/time.js"></script>
 		<script type="text/javascript">
-			mui.init({
-	            preloadPages: [{
-	                url: 'scan.html',
-	                id: 'scan.html'
-	            }]
-	        });
+			mui.init();
 	        mui.plusReady(function(){
 				var ws=plus.webview.currentWebview();
 				ws.addEventListener('maskClick', function(){
@@ -152,7 +147,7 @@
 			var vm = new Vue({
                el:'.mui-content',
                 data:{
-                	barCode:'请点击扫描按钮',
+                	barCode:'请先点击扫描按钮',
                 	selected:'',
                 	from:'',
                 	kind:[],
@@ -172,13 +167,18 @@
 								Date:moment().format("YYYY-MM-DD")
 							},
 						  function(data){
-						  	console.log(data)
+//						  	console.log(data)
 							that.kind=data.data;
 						  }
 						);
                 		
                 	},
                 	scan:function(){
+                		var pageOne = plus.webview.getWebviewById('scan.html');
+                		console.log(JSON.stringify(pageOne));
+                		if(pageOne != null){
+                			pageOne.close();
+                		};
                 		mui.openWindow({
 					         url: 'scan.html', 
 					         id:'scan.html',
@@ -233,6 +233,22 @@
                 	},
                 	submit:function(){               		
                 		that = this;
+                		if(that.input_value==0) return mui.toast('重量不能为0'); 
+						var hh = $('#t1').val();
+						var h1 = new RegExp('^(0\\.)');
+						var j1 = new RegExp('^0');
+						if(!j1.test(that.input_value)){
+							console.log("匹配成功")	
+						}else{
+							//0开头判断
+							if(h1.test(that.input_value)){
+							//0.开头判断
+								console.log("匹配成功")				
+							}else{
+								return mui.toast('重量必须为数值')	
+							}
+						}
+               		
 						$.ajax({
 							url: url_all+"/api/MobileV2/Pack?",		 
 							dataType: 'json',
@@ -256,8 +272,8 @@
 									mui.toast('打包失败');	
 							}
 						});					
-                		if((that.barCode != '')&&(that.pid != '')&&(that.YfType!='')&&(that.input_select!='')){
-                			that.barCode = '';          			
+                		if((that.barCode != '')&&(that.input_value != '')&&(that.pid != '')&&(that.YfType!='')&&(that.input_select!='')&&(that.barCode='请点击扫描按钮')){
+                			that.barCode = '请先点击扫描按钮';          			
 	                		that.YfType = '';
 	                		that.pid = '';
 	                		that.input_select = '';
@@ -296,8 +312,13 @@
 				vm.input_select=event.detail.name;
 				vm.pid=event.detail.id;
 			});
-
-
+//			var input_value =0009;
+//			console.log(input_value.split(''))
+//			console.log(parseFloat(input_value).toString().length)
+//			console.log(input_value.toString().length)
+//			if(parseFloat(input_value)-input_value == 0){
+//      			mui.toast('重量必须为数值')
+//      		} 
 		</script>
 	</body>
 

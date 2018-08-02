@@ -111,7 +111,7 @@
 	        <ul class="mui-table-view info" style="overflow: hidden;">	
 				<li class="mui-table-view-cell mui-media" v-for = 'num2 in inform'  @click="list_go($index,$event)">
 					<a href="javascript:;">
-						<img style="width: 2rem;height: 1.7rem;" class="mui-media-object mui-pull-left" src="images/tz.png.png">
+						<img style="width: 2rem;height: 1.7rem;" class="mui-media-object mui-pull-left" src="images/tz.png">
 						<div class="mui-media-body">
 							<p class='Title' style="margin-left:0.6rem;font-family: '微软雅黑';color: #333;font-weight: 500;">{{num2.Title}}</p>
 		                    <p class='mui-ellipsis' style="text-indent:.5rem;color: #909090;">
@@ -137,18 +137,18 @@
       	mui.init();
 		mui.plusReady(function(){
 			//最新版本下载
-// 			vm.updata();
+   			vm.updata();
 		});
 //    	模块功能展示
       	var Modules = JSON.parse(localStorage.getItem('Modules'));
-      	var img= [{ModuleKey: "DayReport",pic:"images/yfri.png.png"},
-      	{ModuleKey: "MonthReport",pic:"images/yfyue.png.png"},
-      	{ModuleKey: "AlarmRec",pic:"images/bjjl.png.png"},
-      	{ModuleKey: "Search", pic: "images/yfzs.png.png"},
+      	var img= [{ModuleKey: "DayReport",pic:"images/yfri.png"},
+      	{ModuleKey: "MonthReport",pic:"images/yfyue.png"},
+      	{ModuleKey: "AlarmRec",pic:"images/bjjl.png"},
+      	{ModuleKey: "Search", pic: "images/yfzs.png"},
       	{ModuleKey: "Pack", pic: "images/scan_bag.jpg"},
-      	{ModuleKey: "TransRemind", pic: "images/sftx.png.png"},
+      	{ModuleKey: "TransRemind", pic: "images/sftx.png"},
       	{ModuleKey: "PartitionMonitor", pic: "images/jiankong.png"},
-      	{ModuleKey: "Info",pic:"images/tz.png.png"},
+      	{ModuleKey: "Info",pic:"images/tz.png"},
       	{ModuleKey: "aboutUs", pic:"images/wm.png"}]
 		Modules.push({ModuleKey: "aboutUs", Name: "关于我们"})
       	Modules.map(function(item,index){
@@ -181,7 +181,7 @@
             	status:[],
             	statusEnd:[],
             	websocket:'',
-            	old_version:1.0
+            	old_version:'1.0.0'
 
             },
             methods:{
@@ -190,26 +190,36 @@
 					$.get(url_all+"/api/MobileV2/GetLastVersion",
 						{ },
 					  function(data){
-					    if(that.old_version<data.data.PackageVersion){	
-					    	mui.toast('正在下载最新版本')
-	            			var ua = navigator.userAgent.toLowerCase();
-	           				 if(/iphone|ipad|ipod/.test(ua)) {
-									plus.runtime.openURL(data.data.Url);
-		       				}else if(/android/.test(ua)){
-								var dtask = plus.downloader.createDownload( data.data.Url, {}, function ( d, status ) {
-								    if ( status == 200 ) { // 下载成功
-								    	alert( "XIA: " + status ); 
-								        var path = d.filename;
-								        console.log(d.filename);
-								        plus.runtime.install(path);  // 安装下载的apk文件
-								    } else {//下载失败			
-								        alert( "Download failed: " + status ); 
-								    }  
-								});
-								dtask.start(); 
-		       				}else{
-		       				 	return ;
-		       				}
+					    if(that.old_version.replace('.', '')<data.data.PackageVersion.replace('.', '')){
+					    	var btnArray = ['否', '是'];
+								mui.confirm('已有最新版本是否下载？', '提示', btnArray, function(e) {
+									if (e.index == 1) {
+										mui.toast('正在下载最新版本')
+				            			var ua = navigator.userAgent.toLowerCase();
+				           				 if(/iphone|ipad|ipod/.test(ua)) {
+												plus.runtime.openURL(data.data.Url);
+					       				}else if(/android/.test(ua)){
+											var dtask = plus.downloader.createDownload( data.data.Url, {}, function ( d, status ) {
+											    if ( status == 200 ) { // 下载成功
+			//								    	alert( "XIA: " + status ); 
+											        var path = d.filename;
+											        console.log(d.filename);
+											        plus.runtime.install(path);  // 安装下载的apk文件
+											    } else {//下载失败			
+											        alert( "Download failed: " + status ); 
+											    }  
+											});
+											dtask.start(); 
+					       				}else{
+					       				 	return ;
+					       				}
+										
+																				
+									} else {
+										mui.toast('取消下载')
+									}
+								})
+					    	
 					    }else{
 					    	mui.toast('已经是最新版本')
 					    }
@@ -278,7 +288,7 @@
 	        $.get(url_all+"/api/MobileV2/QueryInfo?",
 				{ UserId:localStorage.getItem('MyUserId'),
 					PageIndex:0,
-					PageSize:10},
+					PageSize:3},
 			  function(data){
 			    vm.inform= data.data;
 			    console.log(JSON.stringify(vm.inform))
@@ -291,11 +301,12 @@
 		$('.mui-table-view.info').height(vm.height+'px')
 //		进入模块
 		$('.mui-table-view-cell').on('tap',function(){
-//			if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
-//					plus.nativeUI.toast("当前网络异常，请检查后重试");
-//					return;
-//			}
+			if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+					plus.nativeUI.toast("当前网络异常，请检查后重试");
+					return;
+			}
 			var html = $(this).find('a').attr('class');
+			console.log(html)
       			mui.openWindow({
 			         url: 'html/'+html+'/'+html+'.html', 
 			         id:html,

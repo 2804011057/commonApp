@@ -21,7 +21,7 @@
 			wo=ws.opener();
 			// 开始扫描
 			ws.addEventListener('show', function(){
-				scan=new plus.barcode.Barcode('bcid');
+				scan=new plus.barcode.Barcode('bcid',[plus.barcode.QR]);
 			    scan.onmarked=onmarked;
 			    scan.start({conserve:true,filename:'_doc/barcode/'});
 			}, false);

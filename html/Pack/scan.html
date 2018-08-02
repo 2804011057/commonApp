@@ -12,6 +12,7 @@
 		<script type="text/javascript">
 var ws=null,wo=null;
 var scan=null,domready=false,bCancel=false;
+var isOpen = false; // 闪光灯是否开始标志 true:闪光灯已经开启 false:闪光灯关闭
 // H5 plus事件处理
 function plusReady(){
 	if(ws||!window.plus||!domready){
@@ -22,13 +23,10 @@ function plusReady(){
 	wo=ws.opener();
 	// 开始扫描
 	ws.addEventListener('show',function(){
-		scan=new plus.barcode.Barcode('bcid',[plus.barcode.QR,plus.barcode.EAN8,plus.barcode.EAN13],{frameColor:'#00FF00',scanbarColor:'#00FF00'});
+		scan=new plus.barcode.Barcode('bcid',[plus.barcode.EAN8,plus.barcode.EAN13],{frameColor:'#00FF00',scanbarColor:'#00FF00'});
 	    scan.onmarked=onmarked;
 	    scan.start({conserve:true,filename:'_doc/barcode/'});
 	});
-	// 显示页面并关闭等待框
-//  ws.show('pop-in');
-//  wo.evalJS('closeWaiting()');
 }
 if(window.plus){
 	plusReady();
@@ -57,7 +55,6 @@ function onmarked(type, result, file){
     	break;
     }
     result = result.replace(/\n/g, '');
-    console.log(result);
     $.get(url_all+"/api/MobileV2/GetRubbishByBarCode?",
 		{ UserId:localStorage.getItem('MyUserId'),
 			BarCode:result
@@ -84,11 +81,11 @@ function onmarked(type, result, file){
 		  	wo.evalJS("scaned('"+ type +"','"+ '' +"','"+ file +"');");
 	  	}else{
 	  		wo.evalJS("scaned('"+ type +"','"+ result +"','"+ file +"');");
-	  	}			
+	  	}
+	  	back();
 	  }
-	);
+	);   
     
-    back();
 }
 //		打开扫描灯
 		function openFlash() {
@@ -129,6 +126,10 @@ function onmarked(type, result, file){
 		</script>
 		<link rel="stylesheet" href="../../css/common.css" type="text/css" charset="utf-8"/>
 		<style type="text/css">
+			html,body{
+				margin: 0;
+				padding: 0;
+			}
 #bcid {
 	width: 100%;
 	position: absolute;

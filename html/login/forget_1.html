@@ -133,17 +133,30 @@
    		var vm = new Vue({
 		       	el:'#content',
 		        data:{
-		        	num:localStorage.getItem('name'),
+		        	num:'',
 		        	pass:'',
 		        	code:'',
 		        	name:'',
 		        	nextCode:'',
 		        	phone:'',
 		        	show:false,
-		        	unitCoding:localStorage.getItem('code')
+		        	unitCoding:''
 		        },
 		        methods:{
 		        	forget:function(){
+		        		
+					$.get(url_all+"/api/MobileV2/ForgetPassword?",
+						{ Username:vm.num,
+							CompanyCode:vm.unitCoding,
+							},
+					  function(data){
+							console.log(data.data)
+							localStorage.setItem('Mobile',data.data);
+							localStorage.setItem('code',vm.unitCoding);
+							localStorage.setItem('Username',vm.num);
+
+					  }
+					);
 		        		if (this.pass.length <= 0 ||this.num.length<=0 ) 
 				            {
 				                mui.toast("账号或验证码不能为空！");

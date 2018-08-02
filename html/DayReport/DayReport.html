@@ -312,6 +312,7 @@
 									that.Sum=[];
 									that.Name = [];
 									that.List = data.data;
+									console.log(JSON.stringify(that.List ))
 									that.List.map(function(item,index){
 										that.noInformation+=item.Count;
 										that.Count.push(item.Count);
@@ -504,7 +505,8 @@
 //		    	触发本页PID函数
 		    	vm.change();
 		    	//点击进入下一个页面  并传值PID
-				$('#container').on('tap',function(e){
+				$('#container').on('tap','tspan',function(e){
+					console.log(e.target.innerHTML)
 					if(e.target.innerHTML){					
 						vm.HasChildrens= '';
 	                	vm.PartitionId= '';
@@ -512,48 +514,49 @@
 	                		if(vm.List[x].Name==e.target.innerHTML){
 	                			vm.PartitionId = vm.List[x].PartitionId;
 	                			vm.HasChildrens = vm.List[x].HasChildrens;
+	                			if(vm.HasChildrens){
+			                		mui.openWindow({
+									    url:"DayReport.html?"+(new Date()).getTime(),
+									    id:"DayReport"+(new Date()).getTime(),
+									    createNew:false,
+									    extras:{
+									      eName:e.target.innerHTML,
+						                  code:vm.PartitionId,
+						                  pretime:vm.input
+									    },
+									    show:{
+									      autoShow:true,
+									      aniShow:"pop-in",
+									      duration:500
+									    },
+									    waiting:{
+									      autoShow:false
+									    }
+									});
+			
+			                	}else{
+			                		mui.openWindow({
+								         url: 'DayReportC.html', 
+								         id:'DayReportC',
+								         extras:{
+						               		eName:e.target.innerHTML,
+						                    code:vm.PartitionId,
+						                  	pretime:that.input
+						               	},
+								         show:{
+								            aniShow:'slide-in-right',
+								            duration:300
+								          },
+								         waiting:{
+								          autoShow:false
+								         }
+								    });
+			                	}
 	                			
 	                		}
 	                	}
 	                	
-	                	if(vm.HasChildrens){
-	                		mui.openWindow({
-							    url:"DayReport.html?"+(new Date()).getTime(),
-							    id:"DayReport"+(new Date()).getTime(),
-							    createNew:false,
-							    extras:{
-							      eName:e.target.innerHTML,
-				                  code:vm.PartitionId,
-				                  pretime:vm.input
-							    },
-							    show:{
-							      autoShow:true,
-							      aniShow:"pop-in",
-							      duration:500
-							    },
-							    waiting:{
-							      autoShow:false
-							    }
-							});
-	
-	                	}else{
-	                		mui.openWindow({
-						         url: 'DayReportC.html', 
-						         id:'DayReportC',
-						         extras:{
-				               		eName:e.target.innerHTML,
-				                    code:vm.PartitionId,
-				                  	pretime:that.input
-				               	},
-						         show:{
-						            aniShow:'slide-in-right',
-						            duration:300
-						          },
-						         waiting:{
-						          autoShow:false
-						         }
-						    });
-	                	}
+	                	
 					}
 				})
 

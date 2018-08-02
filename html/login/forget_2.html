@@ -158,7 +158,7 @@
 	<script type="text/javascript" src="../../js/vue.js"></script>
 	<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		mui.init();            
+		mui.init();
    		var vm = new Vue({
 		       	el:'#content',
 		        data:{
@@ -238,11 +238,11 @@
 							dataType: 'json',
 							data:{
 								CompanyCode:localStorage.getItem('code'),
-								Username:localStorage.getItem('name')
+								Username:localStorage.getItem('Username')
 							},
 							method: 'get',
 							success: function(data) {
-								
+								console.log(JSON.stringify(data))
 							},
 							error: function(xhr) {
 						
@@ -253,6 +253,7 @@
 		
 		        }
 			});
+			vm.get()
 
 	</script>
 
