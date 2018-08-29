@@ -144,19 +144,7 @@
 		        },
 		        methods:{
 		        	forget:function(){
-		        		
-					$.get(url_all+"/api/MobileV2/ForgetPassword?",
-						{ Username:vm.num,
-							CompanyCode:vm.unitCoding,
-							},
-					  function(data){
-							console.log(data.data)
-							localStorage.setItem('Mobile',data.data);
-							localStorage.setItem('code',vm.unitCoding);
-							localStorage.setItem('Username',vm.num);
 
-					  }
-					);
 		        		if (this.pass.length <= 0 ||this.num.length<=0 ) 
 				            {
 				                mui.toast("账号或验证码不能为空！");
@@ -168,22 +156,36 @@
 				            }
 				            else 
 				            {       
-				                that = this;
-				                //进入下一级
-			            		mui.openWindow({
-							        url: 'forget_2.html', 
-							        id:'forget_2',
-									extras:{
-					                    
-				               		},
-							        show:{
-							            aniShow:'slide-in-right',
-							            duration:300
-							          },
-							        waiting:{
-							          autoShow:false
-							    	}
-							    });
+				                that = this;														        		
+												$.get(url_all+"/api/MobileV2/ForgetPassword?",
+													{ Username:vm.num,
+														CompanyCode:vm.unitCoding,
+														},
+													function(data){
+														console.log(data.data)
+														that.phone = data.data;
+														localStorage.setItem('Mobile',data.data);
+														localStorage.setItem('code',vm.unitCoding);
+														localStorage.setItem('Username',vm.num);
+														//进入下一级
+														mui.openWindow({
+															url: 'forget_2.html', 
+															id:'forget_2',
+															extras:{
+																		
+																	},
+															show:{
+																	aniShow:'slide-in-right',
+																	duration:300
+																},
+															waiting:{
+																autoShow:false
+														}
+													});
+							
+													}
+												);
+				              
 
 				            }; 
 		        		

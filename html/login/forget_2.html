@@ -125,7 +125,7 @@
 		    <h1 class="mui-title">找回密码</h1>
 		</header>
 		<div class="mui-content" id='content'>
-		    <div class="top">
+		    <div class="top" v-cloak>
 		    	<p class="tc">您正在通过以下手机找回密码</p>
 		    	<p class="tc">{{phone}}</p>
 		    </div>
@@ -166,7 +166,7 @@
 		        	pass:'',
 		        	name:'',
 		        	nextCode:'',
-		        	phone:localStorage.getItem('Mobile'),
+		        	phone:'',
 		        	time:60,
 		        	show:false,
 		        	newPass:''
@@ -184,28 +184,33 @@
 							dataType: 'json',
 							data:{
 								CompanyCode:localStorage.getItem('code'),
-								Username:localStorage.getItem('name'),
+								Username:localStorage.getItem('Username'),
 								NewPassword:that.newPass,
 								CheckCode:that.pass
 							},
 							method: 'get',
 							success: function(data) {
-								mui.toast('密码修改成功');
-//									进入下一级
-			            		mui.openWindow({
-							        url: 'login.html', 
-							        id:'login',
-									extras:{
-					                    
-				               		},
-							        show:{
-							            aniShow:'slide-in-right',
-							            duration:300
-							          },
-							        waiting:{
-							          autoShow:false
-							    	}
-							    });
+								if(data.message =='OK'){
+									mui.toast('密码修改成功');
+									//									进入下一级
+										mui.openWindow({
+												url: 'login.html', 
+												id:'login',
+												extras:{
+																
+														},
+												show:{
+														aniShow:'slide-in-right',
+														duration:300
+													},
+												waiting:{
+													autoShow:false
+											}
+										});
+								}else{
+									mui.toast(data.message);
+								}
+								
 							},
 							error: function(xhr) {
 								mui.toast('验证码错误');
@@ -232,8 +237,22 @@
 				        				
 				        			}
 				        		},1000);
-				       //发送手机号  返回验证码；
-				       $.ajax({
+
+
+		        	}
+		
+		        },
+				mounted: function() {
+					vm.phone = localStorage.getItem('Mobile')
+				}
+			});
+			vm.get();			
+			setTimeout(function(){
+				vm.phone = localStorage.getItem('Mobile')
+			},1000)
+			$('#btnTime').on('tap',function(){
+						//发送手机号  返回验证码；
+						$.ajax({
 							url: url_all+"/api/MobileV2/ForgetPassword?",		 
 							dataType: 'json',
 							data:{
@@ -248,12 +267,7 @@
 						
 							}
 						});
-
-		        	}
-		
-		        }
-			});
-			vm.get()
+			})
 
 	</script>
 

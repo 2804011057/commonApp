@@ -7,7 +7,6 @@
 		<meta name="MobileOptimized" content="320"/>
 		<title>Hello H5+</title>
 		<script type="text/javascript" src="../../js/common.js"></script>
-		<script type="text/javascript" src="../../js/jquery-3.0.0.min.js"></script>
 		<script type="text/javascript" src="../../js/index.js"></script>
 		<script type="text/javascript">
 var ws=null,wo=null;
@@ -55,37 +54,8 @@ function onmarked(type, result, file){
     	break;
     }
     result = result.replace(/\n/g, '');
-    $.get(url_all+"/api/MobileV2/GetRubbishByBarCode?",
-		{ UserId:localStorage.getItem('MyUserId'),
-			BarCode:result
-		},
-	  function(data){
-	  	console.log(JSON.stringify(data))
-	  	if(data.data!=null){
-	  		switch (data.data.YfRubbishStatus){
-		  		case 'YfRubbishStatus_Pack':
-		  		plus.nativeUI.toast('已打包');
-		  		break;
-		  		case 'YfRubbishStatus_Trans':
-		  		plus.nativeUI.toast('已交接');
-		  		break;
-		  		case 'YfRubbishStatus_Storage':
-		  		plus.nativeUI.toast('已入库');
-		  		break;
-		  		case 'YfRubbishStatus_Out':
-		  		plus.nativeUI.toast('已出库');
-		  		break;
-		  		default:
-		  		plus.nativeUI.toast(data.data.YfRubbishStatus);
-		  	}	
-		  	wo.evalJS("scaned('"+ type +"','"+ '' +"','"+ file +"');");
-	  	}else{
-	  		wo.evalJS("scaned('"+ type +"','"+ result +"','"+ file +"');");
-	  	}
-	  	back();
-	  }
-	);   
-    
+		wo.evalJS("scaned('"+ type +"','"+ result +"','"+ file +"');");
+		back();      
 }
 //		打开扫描灯
 		function openFlash() {

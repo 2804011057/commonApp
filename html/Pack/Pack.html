@@ -161,27 +161,27 @@
                 methods:{
                 	wasteType:function(){
                 		that=this;
-						$.get(url_all+"/api/MobileV2/GetTypeStat?",
-							{ PartitionId:0,
-								UserId:localStorage.getItem('MyUserId'),
-								Date:moment().format("YYYY-MM-DD")
-							},
-						  function(data){
-//						  	console.log(data)
-							that.kind=data.data;
-						  }
-						);
+										$.get(url_all+"/api/MobileV2/GetTypeStat?",
+											{ PartitionId:0,
+												UserId:localStorage.getItem('MyUserId'),
+												Date:moment().format("YYYY-MM-DD")
+											},
+											function(data){
+				//						  	console.log(data)
+											that.kind=data.data;
+											}
+										);
                 		
                 	},
                 	scan:function(){
-                		var pageOne = plus.webview.getWebviewById('scan.html');
+                		var pageOne = plus.webview.getWebviewById('scan_2');
                 		console.log(JSON.stringify(pageOne));
                 		if(pageOne != null){
                 			pageOne.close();
                 		};
                 		mui.openWindow({
-					         url: 'scan.html', 
-					         id:'scan.html',
+					         url: 'scan_2.html', 
+					         id:'scan_2',
 					         show:{
 					            aniShow:'slide-in-right',
 					            duration:300
@@ -290,35 +290,55 @@
 				 }
     		});
     		vm.wasteType();
-    		function scaned(t, r, f){
-				vm.barCode=r;				
-			};
-			function scaned_1(t, r, f){
-				vm.input_select = r.split(',')[0];
-				vm.YfType = r.split(',')[1]
-			}
-    		$('.kind').on('tap','.col-33',function(){
-    			$('.select').each(function(){
-    				$(this).css('display','none');
-    			});
-    			$(this).find('img').css('display','block');
-    			vm.YfType=$(this).find('.hidden').text();
-    			
-    			console.log(vm.YfType)
-    		});
-//  		接收遮罩层传来的的分区id 及名称
-    		window.addEventListener('showData',function(event){
-				plus.webview.currentWebview().setStyle({mask:'none'});
-				vm.input_select=event.detail.name;
-				vm.pid=event.detail.id;
+    		function scaned(t, r, f){				
+					$.get(url_all+"/api/MobileV2/GetRubbishByBarCode?",
+					{ UserId:localStorage.getItem('MyUserId'),
+						BarCode:r
+					},
+					function(data){
+						console.log(JSON.stringify(data))
+						if(data.data!=null){
+							switch (data.data.YfRubbishStatus){
+								case 'YfRubbishStatus_Pack':
+								plus.nativeUI.toast('已打包');
+								break;
+								case 'YfRubbishStatus_Trans':
+								plus.nativeUI.toast('已交接');
+								break;
+								case 'YfRubbishStatus_Storage':
+								plus.nativeUI.toast('已入库');
+								break;
+								case 'YfRubbishStatus_Out':
+								plus.nativeUI.toast('已出库');
+								break;
+								default:
+								plus.nativeUI.toast(data.data.YfRubbishStatus);
+							}	
+							vm.barCode='';	
+						}else{
+							vm.barCode=r;	
+						}
+					});
+				};
+				function scaned_1(t, r, f){
+					vm.input_select = r.split(',')[0];
+					vm.YfType = r.split(',')[1]
+				}
+					$('.kind').on('tap','.col-33',function(){
+						$('.select').each(function(){
+							$(this).css('display','none');
+						});
+						$(this).find('img').css('display','block');
+						vm.YfType=$(this).find('.hidden').text();
+						
+						console.log(vm.YfType)
+					});
+	//  		接收遮罩层传来的的分区id 及名称
+					window.addEventListener('showData',function(event){
+					plus.webview.currentWebview().setStyle({mask:'none'});
+					vm.input_select=event.detail.name;
+					vm.pid=event.detail.id;
 			});
-//			var input_value =0009;
-//			console.log(input_value.split(''))
-//			console.log(parseFloat(input_value).toString().length)
-//			console.log(input_value.toString().length)
-//			if(parseFloat(input_value)-input_value == 0){
-//      			mui.toast('重量必须为数值')
-//      		} 
 		</script>
 	</body>
 
