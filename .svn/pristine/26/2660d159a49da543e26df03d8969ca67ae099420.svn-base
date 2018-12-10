@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/index.css">
+		<link rel="stylesheet" href="../../css/LCalendar.css">
+<style>
+	html{
+		font-size:10px ;}
+	.mui-popover-arrow.mui-bottom{
+		display: none;
+	}
+	input[type=text]{
+		margin-bottom: 0px;
+		line-height: 40px;
+		padding: 0;
+	}
+	input[type=search]{
+		/*margin-bottom: 0px;*/
+		    background-color: #f7f7f7;
+	}
+.mui-bar-nav{
+        background-color: #1F79CE;}
+.mui-title{color:#fff}
+    a{color:#fff;}
+.mui-bar-tab .mui-tab-item.mui-active {
+	color: #FFFFFF;background-color: #00B2EE;}
+			.chart {
+				height: 200px;
+				margin: 0px;
+				padding: 0px;
+			}
+			h5 {
+				margin-top: 30px;
+				font-weight: bold;
+			}
+			h5:first-child {
+				margin-top: 15px;
+			}
+			.homeP_1{
+    background-color: #e8e8e8;
+}
+
+.list_1 li .h4{
+    color:white;
+}
+.list_2{
+    /*margin: 0.2rem ;*/
+    box-sizing: border-box;
+}
+.list_2 li{
+    background-color: #75c1e8;
+
+    /*padding: .5rem ;*/
+    border: 1px white solid;
+    border-radius: 5px;
+    /*margin: .2rem ;*/
+    box-sizing: border-box;
+}
+.list_2:nth-child(odd) li{
+    background-color: #6699FF;
+}*/
+
+#demo1{
+    width: 100%;
+}
+.line{
+    width: 96%;
+    /*border-bottom: 1px solid #e2d2d2;*/
+    position: absolute;
+    top: 70px;
+    left: 2%;
+    z-index: 0;
+    /*background-color: grey;*/
+}
+.title{
+    position: absolute;
+    top: 13px;
+    left: 20px;
+    font-size: 18px;
+    font-family: '微软雅黑';
+}
+.mui-plus .plus{
+				display: inline;
+			}
+			
+			.plus{
+				display: none;
+			}
+			
+			#topPopover {
+				position: fixed;
+				top: 16px;
+				right: 6px;
+			}
+			#topPopover .mui-popover-arrow {
+				left: auto;
+				right: 6px;
+			}
+
+			span.mui-icon {
+				font-size: 14px;
+				color: #007aff;
+				margin: 0 10px;
+
+			}
+
+			.mui-search .mui-placeholder{
+				background-color: white;
+			}
+			.mui-popover .mui-popover-arrow:after{
+				display: none;
+			}
+			.mui-card .mui-control-content {
+							padding: 10px;
+						}
+			.title_top{
+				top: 10px;
+				width: 100%;
+			    position: absolute;
+			}
+			
+
+		</style>
+	</head>
+
+	<body>
+		<!--导航栏-->
+		<header  id="header" class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">医废月报表</h1>
+		</header>
+		<div class="mui-content" id='content' v-cloak>
+			<!--选择日期-->
+            <div class="rowf ar M homeP_1top0">
+                <div class="col-33  rowf ac L" @click="subtract()">
+                    <span class=" mui-icon mui-icon-arrowleft subtract"></span>
+                    <p class="h4 subtract">前一月</p>
+                </div>
+                <div class="col-33 rowf ac M">
+                    <input v-model="input" class="tc " id="demo1" type="text" readonly="readonly" placeholder="日期"  />
+                </div>
+                <div class="col-33 rowf ac R " @click="add()">
+                    <p class="h4 last">后一月</p>          
+                    <span class=" mui-icon mui-icon-arrowright last"></span>
+                </div>
+              
+                
+            </div>
+             <!--中部数据-->
+	            <div class="rowf ar M tc homeP_1top" style="margin-top: 1rem;" >
+	                <div class="col-33" >
+	                    <p class="h4 from"><span>{{headCont.PackCount ||0}}</span ><span style="font-size:14px;">&nbsp;袋</span></p>
+	                    <p class="h4 from">{{headCont.PackSum>1000?((headCont.PackSum/1000).toFixed(2)||0)+' 吨':((headCont.PackSum)||0)+' kg'}}</p>
+	                    <p class="h4">产生总量</p>
+	
+	                </div>
+	                <div class="col-33" >
+	                	<p class="h4 from"><span>{{headCont.TransCount ||0}}</span><span style="font-size:14px;">&nbsp;袋</span></p>
+	                    <p class="h4 from">{{headCont.TransSum>1000?((headCont.TransSum/1000).toFixed(2)||0)+' 吨':((headCont.TransSum)||'0')+' kg'}}</p>
+	                    
+	                    <p class="h4">移交总量</p>
+	                </div>
+	                <div class="col-33" >
+	                    <p class="h4 from"><span>{{headCont.StorageCount ||0}}</span ><span style="font-size:14px;">&nbsp;袋</span></p>
+	                    <p class="h4 from">
+	                    	{{headCont.StorageSum>1000?((headCont.StorageSum/1000).toFixed(2)||0)+' 吨':((headCont.StorageSum)||0)+' kg'}}
+	                    </p>
+	                    <p class="h4">入库总量 </p>
+	                </div>
+	            </div>
+ 			<!--图表-->
+ 			  	<div class="mui-control-content mui-active">
+                	<div id="scroll" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div id="container_1c" style="height: 34rem;" v-show="noInformation" ></div>
+							<div class="noInformation rowf M ac" v-show="!noInformation">暂无信息</div>
+							<div class="rowf  M title_top">{{eName}}医废报表</div>
+				            <ul class="rowf be M span_top" v-show="noInformation">
+				                <li class="span_mid rowf be">
+				                    <p ></p>
+				                    <span>重量&nbsp;(kg)</span>
+				                </li>
+				                <li class="span_mid2 rowf be">
+				                    <p ></p>
+				                    <span>数量&nbsp;(袋)</span>
+				                </li>
+				            </ul>
+		          			<span class="line" v-show="noInformation"></span>
+	           
+			           </div>
+		           </div>
+                </div>
+
+
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/LCalendar.js"></script>
+		<script type="text/javascript" src="../../js/time.js"></script>
+		<script src="../../libs/highcharts.js"></script>
+		<script src="../../libs/exporting.js"></script>
+		<script type="text/javascript" src="../../js/vue.js"></script>
+		<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+				mui.init();
+//				日期
+				var calendar = new LCalendar();
+		        calendar.init({
+		            'trigger': '#demo1', //标签id
+		            'type': 'ym', //date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择,
+		            'minDate': '2017-5', //最小日期
+		            'maxDate': new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate() //最大日期
+		        });
+		        mui.plusReady(function(){
+		            var self = plus.webview.currentWebview();
+	            	vm.eName = self.eName;
+		            vm.code = self.code;
+		            vm.input = self.pretime;
+					$('.mui-title').text(vm.eName+'医废月报表详情')
+			        
+		        });
+					$('.last').css("color","#808080");
+				 	var vm = new Vue({
+			                el:'#content',
+			                data:{	               
+			                	headCont:'',
+			                	bingqu:[],
+			                	weight:[],
+			                	count:[],
+			          			select:'',
+			                    input:'',
+			                    id:'',
+			                    pretime:'',
+			                	eName:'',
+			                	code:'',
+			                	noInformation:0,
+			                	
+			                },
+			                methods:{
+//			                	增加月份
+			                	add:function(){
+//			                		this.input=moment(this.input).add(1, 'months').format("YYYY-MM");
+			                		console.log('rrrrrrrrr');
+			                		if(moment(this.input).isBefore(moment().format("YYYY-MM"))){
+						                this.input=moment(this.input).add(1, 'months').format("YYYY-MM");
+						            }else{
+						                this.input=moment().format("YYYY-MM");
+						                $('.last').css("color","#808080");
+						            };
+						            if((this.input) == moment().format("YYYY-MM")){
+						                $('.last').css("color","#808080");
+						            };
+			               
+			                	},
+//			                	减少月份
+			                	subtract:function(){
+			                		this.input=moment(this.input).subtract(1, 'months').format("YYYY-MM");
+			                		
+			                		if(moment(this.input).isBefore(moment().format("YYYY-MM"))){
+						                $('.last').css("color","#1F79CE");
+						            }else{
+						                $('.last').css("color","#808080");
+						            };
+
+			               
+			                	},
+//			                	头部数据函数
+			                	head:function(time){
+			                		that = this;
+			               			$.get(url_all+"/api/MobileV2/GetStatSummary?",
+										{ UserId:localStorage.getItem('MyUserId'),
+											PartitionId:that.code,
+											Date:time
+										},
+									  function(data){
+										that.headCont = data.data;
+										console.log(that.headCont)
+									  }
+									);
+			                	},
+//			                	图表数据函数
+			                	picture:function(time){
+			                		that = this;
+			                		that.noInformation=0;
+			                		$.get(url_all+"/api/MobileV2/GetTypeStat?",
+										{ UserId:localStorage.getItem('MyUserId'),
+											PartitionId:that.code ,
+											Date:time
+										},
+									  function(data){
+										  	that.Count = [];
+											that.Sum=[];
+											that.Name = [];
+											that.List = data.data;
+											that.List.map(function(item,index){
+												that.noInformation+=item.Count;
+												that.Count.push(item.Count);
+												that.Sum.push(Number(item.Sum.toFixed(2)));
+												that.Name.push(item.YfTypeName);
+											});
+//											生成图表
+						                	setTimeout(function(){
+							                	that.getData('#container_1c',that.eName,that.Name,that.Sum,that.Count);
+							                },200)
+									  }
+									);
+			                	},
+//			                	图表生成函数
+			                	getData:function (id,name,a,b,c) {
+			                		that = this;
+						            Highcharts.setOptions({
+						                colors: ['#1f79ce', ' #ff8635', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4']
+						            });
+						            jQuery(id).highcharts({
+						                chart: {
+						                    type: 'column',
+						                    marginTop: 110,
+
+						                },
+						                title: {
+						                    text: '',
+						                    
+						                },
+						
+						                xAxis: {
+						                    categories:a,
+						                    crosshair: true,
+											labels:{
+						                        rotation: -30,//倾斜度
+						                         align: 'right',
+						
+						
+						        			}
+						                },
+						                yAxis: {
+
+						                },
+						                plotOptions: {
+						                    column: {
+						                        pointPadding: 0,
+						                        borderWidth: 0
+						                    }
+						                },
+						                series: [{
+						                    name:'重量',
+						                    data: b
+						                }, {
+						                    name:'数量',
+						                    data: c
+						                }]
+						            });
+						        }
+			                },
+			                	
+			                watch:{
+				                	input:{
+				                		handler:function(){
+				                			this.head(this.input);
+				                			this.picture(this.input);
+				                			if((this.input) == moment().format("YYYY-MM")){
+							                	$('.last').css("color","#808080");
+								            }else{
+								            	$('.last').css("color","#1F79CE");
+								            };
+				                	}
+
+				                }
+				            }
+						});
+				//区域滚动
+				(function($) {
+					$('#scroll').scroll({
+						indicators: true //是否显示滚动条
+					});
+					$('#scroll_1').scroll({
+						indicators: true //是否显示滚动条
+					});
+
+				})(mui);
+
+
+		</script>
+	</body>
+
+</html>

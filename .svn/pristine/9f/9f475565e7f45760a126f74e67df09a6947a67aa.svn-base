@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			}
+			#header .mui-title {
+			    color: #fff;
+			}
+			.mui-content ul{
+				padding: 2rem;
+				font-size: 1.6rem;
+				font-family: 微软雅黑;
+			}
+			.mui-content ul li{
+				margin: 2rem 1rem;
+			}
+			.rowf {
+			    flex-flow: -webkit-wrap;
+			    flex-flow: wrap;
+			}
+
+
+			.hidden{
+				display: none;
+			}
+			.mui-btn-block{
+				margin-bottom: 0;
+			}
+			a {
+			    color: white;
+			}
+			input[type=text]{
+				margin-bottom: 0;
+			}
+			.mui-btn.mui-pull-right{
+				top: 5px;
+			}
+			input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+				color: lightgray; 
+			}
+			.mui-input-group>div{
+				padding: 1.5rem 1rem;
+				font-size: 1.8rem;
+			}
+			.mui-input-group input:last-child {
+					text-align: right;
+					background-image: none;
+			}
+			.mui-icon-arrowright:before {
+					color: lightgrey;
+			}
+			.mui-input-group .span{
+					height: 2rem;
+					padding: 0;
+					text-align: right;
+					color: lightgray;
+			}
+			.user{
+				margin: 1.5rem 0 2rem 0;
+			}
+			#footer{
+				margin-top: 10rem;
+			}
+			#footer button{
+				color: black;
+				margin-bottom: 2rem;
+				border: none;
+			}
+			.white{
+				color: white;
+			}
+		</style>
+	</head>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">个人中心</h1>
+		</header>
+		<div class="mui-content" >
+
+			<form class="mui-input-group user" >
+					<div class="rowf be ac">
+						<span class="border">用户名</span>
+						<div class="rowf ac">
+							<span class='span'>{{user}}</span>	
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</div>				
+					</div>
+			</form>
+			<form class="mui-input-group name" >
+					<div class="rowf be ac">
+						<span class="border">姓<span class="white">邮</span>名</span>
+						<div class="rowf ac">
+							<span class='span'>{{name}}</span>	
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</div>			
+					</div>
+			</form>
+			<form class="mui-input-group phone" >
+					<div class="rowf be ac">
+						<span class="border">手机号</span>
+						<div class="rowf ac">
+							<span class='span'>{{phone}}</span>	
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</div>			
+					</div>
+			</form>
+			<form class="mui-input-group email" >
+					<div class="rowf be ac">
+						<span class="border">邮<span class="white">邮</span>箱</span>
+						<div class="rowf ac">
+							<span class='span'>{{email}}</span>	
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</div>			
+					</div>
+			</form>
+			<div id="footer">
+				<button @click='chang'   type="button" class="mui-btn mui-btn-block " >
+					修改密码 
+				</button>
+				<button @click='out'   type="button" class="mui-btn mui-btn-block " >
+					退出登陆 
+				</button>
+			</div>
+			
+		</div>
+	<body>
+		<script src="../../js/index.js"></script>
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script type="text/javascript">
+			mui.init();
+	    mui.plusReady(function(){
+
+			});
+			var vm = new Vue({
+               el:'.mui-content',
+                data:{
+									user:localStorage.getItem('Username'),
+									name:localStorage.getItem('Name'),
+									phone:localStorage.getItem('Mobile'),
+									email:localStorage.getItem('Mobile')
+                	},
+                methods:{  
+                	chang:function(){
+												// 跳转修改密码页面
+												mui.openWindow({
+														url: 'pass.html', 
+														id:'pass',
+														extras:{
+																		
+																},
+														show:{
+																aniShow:'slide-in-right',
+																duration:300
+															},
+														waiting:{
+															autoShow:false
+													}
+												});
+                	},
+                	out:function(){
+                		var curr = plus.webview.currentWebview();
+                		curr.close();
+                		plus.runtime.restart();	
+                	},
+				 }
+    		});
+				// 修改手机号 姓名 邮箱
+				$('.mui-input-group').on('tap',function(){
+					if($(this).attr('class').indexOf('user')>-1){return}
+					mui.openWindow({
+							url: 'change.html', 
+							id:'change',
+							extras:{
+								className:$(this).attr('class')		
+							},
+							show:{
+									aniShow:'slide-in-right',
+									duration:300
+								},
+							waiting:{
+								autoShow:false
+						}
+					});
+				});
+				window.addEventListener('personal', function(e) { 
+					switch (e.detail.id.split(',')[0]){
+						case "name":
+							vm.name = e.detail.id.split(',')[1]
+						break;
+						case "phone":
+							vm.phone = e.detail.id.split(',')[1]
+						break;
+						default:
+						vm.email = e.detail.id.split(',')[1]
+					}
+				});
+				
+		</script>
+	</body>
+
+</html>

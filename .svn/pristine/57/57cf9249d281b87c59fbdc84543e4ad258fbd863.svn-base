@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/index.css">
+		<link rel="stylesheet" href="../../css/LCalendar.css">
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-popover-arrow.mui-bottom{
+				display: none;
+			}
+			input[type=text]{
+				margin-bottom: 0px;
+				line-height: 40px;
+				padding: 0;
+			}
+			input[type=search]{
+				/*margin-bottom: 0px;*/
+				    background-color: #f7f7f7;
+			}
+			.mui-bar-nav{
+			    background-color: #1F79CE;}
+			.mui-title{color:#fff}
+			    a{color:#fff;}
+			.mui-bar-tab .mui-tab-item.mui-active {
+				color: #FFFFFF;background-color: #00B2EE;}
+			.chart {
+				height: 200px;
+				margin: 0px;
+				padding: 0px;
+			}
+			h5 {
+				margin-top: 30px;
+				font-weight: bold;
+			}
+			h5:first-child {
+				margin-top: 15px;
+			}
+			.homeP_1{
+			    background-color: #e8e8e8;
+			}
+		
+			#demo1{
+			    width: 100%;
+			}
+		
+			.mui-plus .plus{
+				display: inline;
+			}
+		
+			.plus{
+				display: none;
+			}
+			
+			#topPopover {
+				position: fixed;
+				top: 16px;
+				right: 6px;
+			}
+			#topPopover .mui-popover-arrow {
+				left: auto;
+				right: 6px;
+			}
+		
+			span.mui-icon {
+				font-size: 2rem;
+				color: #007aff;
+				margin: 0 10px;
+		
+			}
+		
+			.mui-search .mui-placeholder{
+				background-color: white;
+			}
+			.mui-popover .mui-popover-arrow:after{
+				display: none;
+			}
+			.mui-card .mui-control-content {
+				padding: 10px;
+				
+			}
+			.homeP_1top>div{
+				padding:1rem 0.5rem;
+			}
+			input[type=text] {
+			    margin-bottom: 0px;
+			    line-height: 40px;
+			    padding: 0;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<!--导航栏-->
+		<header  id="header" class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">医废日报表</h1>
+		</header>
+		<div class="mui-content" id='content' v-cloak>
+			<div class="Daily_top">
+				<!--选择日期-->
+	            <div class="rowf ar M homeP_1top0">
+	                <div class="col-33  rowf ac L" @click="subtract()">
+	                    <span class=" mui-icon mui-icon-arrowleft subtract"></span>
+	                    <p class="h4 subtract">前一天</p>
+	                </div>
+	                <div class="col-33 rowf ac M">
+	                    <input v-model="input" class="tc " id="demo1" type="text" readonly="readonly" placeholder="日期"  />
+	                </div>
+	                <div class="col-33 rowf ac R " @click="add()">
+	                    <p class="h4 last">后一天</p>          
+	                    <span class=" mui-icon mui-icon-arrowright last"></span>
+	                </div>
+	               
+	            </div>
+			<!--头部数据-->
+	            <div class="rowf ar M tc homeP_1top" style="margin-top: 1rem;" >
+	                <div class="col-33" >
+	                    <p class="h4 from"><span>{{headCont.PackCount ||0}}</span ><span style="font-size:14px;">&nbsp;袋</span></p>
+	                    <p class="h4 from">{{headCont.PackSum>1000?((headCont.PackSum/1000).toFixed(2)||0)+' 吨':((headCont.PackSum).toFixed(2)||0)+' kg'}}</p>
+	                    <p class="h4">产生总量</p>
+	
+	                </div>
+	                <div class="col-33" >
+	                	<p class="h4 from"><span>{{headCont.TransCount ||0}}</span><span style="font-size:14px;">&nbsp;袋</span></p>
+	                    <p class="h4 from">{{headCont.TransSum>1000?((headCont.TransSum/1000).toFixed(2)||0)+' 吨':((headCont.TransSum).toFixed(2)||'0')+' kg'}}</p>
+	                    
+	                    <p class="h4">移交总量</p>
+	                </div>
+	                <div class="col-33" >
+	                    <p class="h4 from"><span>{{headCont.StorageCount ||0}}</span ><span style="font-size:14px;">&nbsp;袋</span></p>
+	                    <p class="h4 from">
+	                    	{{headCont.StorageSum>1000?((headCont.StorageSum/1000).toFixed(2)||0)+' 吨':((headCont.StorageSum).toFixed(2)||0)+' kg'}}
+	                    </p>
+	                    <p class="h4">入库总量 </p>
+	                </div>
+	            </div>
+	        <!--切换选项-->
+	            <div >
+					<div id="segmentedControl" class="mui-segmented-control">
+						<a class="mui-control-item mui-active" href="#item1">楼层产量</a>
+						<a class="mui-control-item" href="#item2">收废人工作量</a>
+					</div>
+				</div>
+			</div>
+
+			<div>
+		<!--图表项-->
+			<div id="item1" class="mui-control-content mui-active" >
+						<div class="item1_div">
+                            <ul class="rowf R M  ">
+                                <li class="span_mid rowf be">
+                                    <p ></p>
+                                    <span>重量&nbsp;(kg)</span>
+                                </li>
+                                <li class="span_mid2 rowf be" >
+                                    <p ></p>
+                                    <span>数量&nbsp;(袋)</span>
+                                </li>
+                            </ul>
+                            <div class="rowf M ac prompt">温馨提示：点击可查看详细信息</div>
+						</div>
+
+						<div id="scroll" class="mui-scroll-wrapper pic">
+							<div class="mui-scroll">
+								<!--图表-->
+		                    	<div id="container" v-show="noInformation"></div>
+		                    	<div class="noInformation rowf M ac" v-show="!noInformation">暂无信息</div>
+		                    	<div style="height: 500px;"></div>
+		                
+							</div>
+						</div>
+				</div>
+		<!--工作列表项-->
+			<div id="item2" class="mui-control-content">
+					<div id="scroll_1" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul class="rowf be tc list_1">
+		                        <li class="col-33"><p class="h4">姓名</p></li>
+		                        <li class="col-33"><p class="h4">接收重量</p></li>
+		                        <li class="col-33"><p class="h4">入库重量</p></li>
+		                    </ul>
+		                    <div class="plc">
+		                        <ul class="rowf be tc list_2" v-for="num in work">
+		                            <li class="col-33"><p class="h4">{{num.Name}}</p></li>
+		                            <li class="col-33"><p class="h4">{{num.TransSum.toFixed(2)}}</p></li>
+		                            <li class="col-33"><p class="h4">{{parseFloat(num.StorageSum).toFixed(2)}}</p></li>
+		                        </ul>
+		                       <div style="height: 500px;"></div>
+		                    </div>
+		                    
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../libs/highcharts.js"></script>
+		<script src="../../libs/exporting.js"></script>	
+		<script src="../../js/LCalendar.js"></script>
+		<script type="text/javascript" src="../../js/time.js"></script>
+		<script type="text/javascript" src="../../js/vue.js"></script>
+		<script type="text/javascript" src="../../js/index.js"></script>
+		<script>
+			mui.init();
+	        mui.plusReady(function(){
+				var self=plus.webview.currentWebview();			
+//				日期
+				var calendar = new LCalendar();
+	        	calendar.init({
+		            'trigger': '#demo1', //标签id
+		            'type': 'date', //date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择,
+		            'minDate': '2017-5-1', //最小日期
+		            'maxDate': new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate() //最大日期
+		    });
+
+				$('.last').css("color","#808080");
+		 		var vm = new Vue({
+	                el:'#content',
+	                data:{
+	                	show_n:'false',
+	                	play:'false',
+	                	headCont:'',
+	                	pictureCont:[],
+	          			select:'',
+	                    input:'',
+	                    code:'',
+	                    eName:'',
+	                    selectList:'',
+	                    work:'',
+	                    Name:[],
+	                    Count:[],
+	                    Sum:[],
+	                    PartitionId:0,
+	                    List:[],
+	                    noInformation:0,
+	                    height:'',
+	                    HasChildrens:''	          
+	                    
+	                },
+					methods:{
+//						获取本页PID函数
+						change:function(){
+							if(self.code){
+				            	vm.eName = self.eName;
+				            	vm.input = self.pretime;
+				            	vm.PartitionId = self.code;
+				            	$('.mui-title').text(vm.eName+'医废日报表')
+				            	
+				           	}
+						},
+//		                	增加天数
+	                	add:function(){
+	                		if(moment(this.input).isBefore(moment().format("YYYY-MM-DD"))){
+				                this.input=moment(this.input).add(1, 'd').format("YYYY-MM-DD");
+				            }else{
+				                this.input=moment().format("YYYY-MM-DD");
+				                $('.last').css("color","#808080");
+				            };
+				            if((this.input) == moment().format("YYYY-MM-DD")){
+				                $('.last').css("color","#808080");
+				            };
+	               
+	                	},
+//		                	减少天数
+	                	subtract:function(){
+	                		this.input=moment(this.input).subtract(1, 'd').format("YYYY-MM-DD");
+	                		if(moment(this.input).isBefore(moment().format("YYYY-MM-DD"))){
+				                $('.last').css("color","#1F79CE");
+				            }else{
+				                $('.last').css("color","#808080");
+				            };
+	               
+	                	},
+//		                	头部数据获取
+	                	head:function(a){	               			
+	                		that = this;
+	               			$.get(url_all+"/api/MobileV2/GetStatSummary?",
+								{ UserId:localStorage.getItem('MyUserId'),
+									PartitionId:that.PartitionId,
+									Date:a
+								},
+							  function(data){
+								that.headCont = data.data;
+							  }
+							);
+	                	},
+//		                	图表数据获取填充
+	                	picture:function(a){
+	                		that = this;
+	                		that.noInformation=0;
+	                		$.get(url_all+"/api/MobileV2/GetStatList?",
+								{ UserId:localStorage.getItem('MyUserId'),
+									PartitionId:that.PartitionId ,
+									Date:a
+								},
+							  function(data){
+							  	console.log(JSON.stringify(data.data))
+								  	that.Count = [];
+									that.Sum=[];
+									that.Name = [];
+									that.List = data.data;
+									console.log(JSON.stringify(that.List ))
+									that.List.map(function(item,index){
+										that.noInformation+=item.Count;
+										that.Count.push(item.Count);
+										that.Sum.push(Number(item.Sum.toFixed(2)));
+										that.Name.push(item.Name);
+									});
+								// 撑满全屏
+							    vm.height = ($(window).height()-$('.Daily_top').height()-54);
+								$('.mui-control-content.mui-active').height(vm.height+'px');
+								$('#scroll_1').height(vm.height+'px');
+				                $('#container').height(((that.Name.length)*5+5)+'rem');
+//				               	 图表函数生成
+			                	setTimeout(function(){
+				                	that.getData('#container',that.Name,that.Sum,that.Count);
+				                },200)
+							  }
+							);
+	                	},
+//		                	工作列表函数
+	                	workList:function(a){
+	                		that = this;
+	                		$.get(url_all+"/api/MobileV2/GetPersonStat?",
+								{ UserId:localStorage.getItem('MyUserId'),
+									PartitionId:that.PartitionId ,
+									Date:a},
+							  function(data){
+									that.work = data.data;
+									console.log(JSON.stringify(that.work))
+							  }
+							);
+	                	},
+
+//						图表生成函数
+						getData:function (id,a,b,c) {
+				            Highcharts.setOptions({
+				                colors: ['#1f79ce', ' #ff8635', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4']
+				            });
+			            	jQuery(id).highcharts({
+			                chart: {
+			                    type: 'bar',
+			                    marginTop: 0,
+			                },
+			                title: {
+			                    text: '', align: 'left'
+			                },
+			                xAxis: {
+			                    categories: a,
+			                    title: {
+			                        text: null,
+			                        align: 'low'
+			                    }
+			                },
+			                yAxis: {
+			                    min: '0',
+			                    title: {
+			                        text: '总量 (kg)',
+			                        align: 'high'
+			                    },
+			                    labels: {
+			                        overflow: 'justify'
+			                    },
+			                    
+			                },
+			                tooltip: {
+			                    // valueSuffix: ' 百万'
+			                },
+			                plotOptions: {
+			                    bar: {
+			                        dataLabels: {
+			                            enabled: true,
+			                            allowOverlap: true
+			                        }
+			                    },
+			                    column: {
+			                        borderWidth: 3,               //柱子边框的大小
+			                        borderColor: "red",
+			                        pointPadding: 200,
+			                        groupPadding:10,
+			                        shadow: false,
+			                    },
+//			                    	进入下一页面，并传值PID
+			                    series: {
+						            cursor: 'pointer',
+						            events: {
+						                click: function (event) {
+						                	vm.HasChildrens= '';
+						                	vm.PartitionId= '';
+						                	for(x in vm.List){
+						                		if(vm.List[x].Name==event.point.category){
+						                			vm.PartitionId = vm.List[x].PartitionId;
+						                			vm.HasChildrens = vm.List[x].HasChildrens;
+						                			
+						                		}
+						                	}
+						                	
+						                	if(vm.HasChildrens){
+						                		mui.openWindow({
+												    url:"DayReport.html?"+(new Date()).getTime(),
+												    id:"DayReport"+(new Date()).getTime(),
+												    createNew:false,
+												    extras:{
+//												      tag:++tag,
+												      eName:event.point.category,
+									                  code:vm.PartitionId,
+									                  pretime:vm.input
+												    },
+												    show:{
+												      autoShow:true,
+												      aniShow:"pop-in",
+												      duration:500
+												    },
+												    waiting:{
+												      autoShow:false
+												    }
+												});
+
+						                	}else{
+						                		mui.openWindow({
+											         url: 'DayReportC.html', 
+											         id:'DayReportC',
+											         extras:{
+									               		eName:event.point.category,
+									                    code:vm.PartitionId,
+									                  	pretime:that.input
+									               	},
+											         show:{
+											            aniShow:'slide-in-right',
+											            duration:300
+											          },
+											         waiting:{
+											          autoShow:false
+											         }
+											    });
+						                	}
+//						                	
+						                }
+						            }
+						        }
+			
+			                },
+			                 legend: {
+			                    layout: 'vertical',
+			                    align: 'right',
+			                    verticalAlign: 'top',
+			                    x: -40,
+			                    y: 100,
+			                    floating: true,
+			                    borderWidth: 1,
+			                    backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+			                    shadow: true
+			                },
+			                credits: {
+			                    enabled: false
+			                },
+			                exporting:{
+			                    enabled: false
+			                },
+			                
+			                series: [{
+			                    name:'重量',
+			                    data: b,
+			                    pointPadding:0,
+			                    groupPadding:0
+			                },{name:'数量',
+			                    data: c,
+			                    pointPadding:0,
+			                    groupPadding:0.
+			                }
+			                ]
+			            });
+			        }
+	                },
+	                watch:{
+		                	input:{
+		                		handler:function(){
+		                			this.head(this.input);
+		                			this.picture(this.input);
+		                			this.workList(this.input);
+		                			if((this.input) == moment().format("YYYY-MM-DD")){
+					                	$('.last').css("color","#808080");
+						            }else{
+						            	$('.last').css("color","#1F79CE");
+						            };
+		                		}
+		                	}
+		            }
+				})
+//				获取当天时间
+		    	vm.input = moment().format("YYYY-MM-DD");
+//		    	触发本页PID函数
+		    	vm.change();
+		    	//点击进入下一个页面  并传值PID
+				$('#container').on('tap','tspan',function(e){
+					console.log(e.target.innerHTML)
+					if(e.target.innerHTML){					
+						vm.HasChildrens= '';
+	                	vm.PartitionId= '';
+	                	for(x in vm.List){
+	                		if(vm.List[x].Name==e.target.innerHTML){
+	                			vm.PartitionId = vm.List[x].PartitionId;
+	                			vm.HasChildrens = vm.List[x].HasChildrens;
+	                			if(vm.HasChildrens){
+			                		mui.openWindow({
+									    url:"DayReport.html?"+(new Date()).getTime(),
+									    id:"DayReport"+(new Date()).getTime(),
+									    createNew:false,
+									    extras:{
+									      eName:e.target.innerHTML,
+						                  code:vm.PartitionId,
+						                  pretime:vm.input
+									    },
+									    show:{
+									      autoShow:true,
+									      aniShow:"pop-in",
+									      duration:500
+									    },
+									    waiting:{
+									      autoShow:false
+									    }
+									});
+			
+			                	}else{
+			                		mui.openWindow({
+								         url: 'DayReportC.html', 
+								         id:'DayReportC',
+								         extras:{
+						               		eName:e.target.innerHTML,
+						                    code:vm.PartitionId,
+						                  	pretime:that.input
+						               	},
+								         show:{
+								            aniShow:'slide-in-right',
+								            duration:300
+								          },
+								         waiting:{
+								          autoShow:false
+								         }
+								    });
+			                	}
+	                			
+	                		}
+	                	}
+	                	
+	                	
+					}
+				})
+
+		    });
+//		   	 图表滚动区域函数
+			(function($) {
+				$('#scroll').scroll({
+					indicators: true //是否显示滚动条
+				});
+				$('#scroll_1').scroll({
+					indicators: true //是否显示滚动条
+				});
+				$('#scroll_2').scroll({
+					indicators: true //是否显示滚动条
+				});
+
+			})(mui);
+
+			
+
+		</script>
+	</body>
+
+</html>

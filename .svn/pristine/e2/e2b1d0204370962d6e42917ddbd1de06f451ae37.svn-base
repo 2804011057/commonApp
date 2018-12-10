@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			*{
+				background-color: #FFFFFF;
+			}
+
+			
+			.content{
+				position: absolute;
+				top: 0px;
+				bottom: 0px;
+				width: 100%;
+				height: 100%;
+			}
+			
+			.name{
+				width: 100%;height: 50px;text-align: center;line-height: 50px;border-bottom: 1px solid #EEEEEE;
+			}
+			
+			.dataBox{
+				width: 100%;height: 50px;position: relative;line-height: 50px;
+			}
+			
+			.dataBox-title{
+				width: 100px;height: 100%;padding-left: 10px;
+			}
+			
+			.dataBox-data{
+				position: absolute;top: 0px;left: 100px;right: 0px;bottom: 0px;
+				text-align: right;
+				padding-right: 10px;
+			}
+
+			#confirm:active{
+				-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+				box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+			}
+			#cancel:active{
+				-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+				box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+			}
+			.name{
+				font-size: 18px;
+				font-weight: 600;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="content">
+			<div class="name"   v-html="sendName"></div>
+			<div  class="dataBox">
+				<div class="dataBox-title">医废编号：</div>
+				<div class="dataBox-data"  v-html="code"></div>
+			</div>
+			<div class="dataBox">
+				<div class="dataBox-title">医废类型：</div>
+				<div class="dataBox-data"  v-html="typeName"></div>
+			</div>
+			<div class="dataBox">
+				<div class="dataBox-title">打包时间：</div>
+				<div class="dataBox-data"  v-html="packTime"></div>
+			</div>
+			<div class="dataBox">
+				<div class="dataBox-title">延时时长：</div>
+				<div class="dataBox-data"  v-html="ysTim"></div>
+			</div>
+			<div style="width: 100%;height: 50px;text-align: center;border-top:1px solid #EEEEEE;position: relative;line-height: 50px;">
+				<div style="width: 50%;height: 100%;float: left;color: #007aff;font-weight: 600;"  id="confirm">确定</div>
+				<div style="width: 50%;height: 100%;float: left;color: #007aff;"  id="cancel">取消</div>
+				<div style="width: 1px;height: 100%;position: absolute;top: 0px;left: 50%;background-color: #EEEEEE;"></div>
+			</div>
+		</div>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/vue.js" ></script>
+		<script type="text/javascript" src="../../js/index.js" ></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback:function(){
+				    plus.webview.getWebviewById('TransRemind').setStyle({mask:"none"});
+			    }
+			});
+			var vm="";
+			mui.plusReady(function(){
+				plus.webview.getWebviewById('TransRemind_Pop').close(); 
+				var sendName=plus.webview.currentWebview().sendName;
+				var code=plus.webview.currentWebview().code;
+				var typeName=plus.webview.currentWebview().typeName;
+				var packTime=plus.webview.currentWebview().packTime;
+				var ysTim=plus.webview.currentWebview().ysTime;
+				
+				var YfAlarmRecId=plus.webview.currentWebview().YfAlarmRecId;
+				var ReceiverId=plus.webview.currentWebview().ReceiverId;
+
+				vm=new Vue({
+					el:".content",
+					data:{
+						sendName:sendName,
+						code:code,
+						typeName:typeName,
+						packTime:packTime,
+						ysTim:ysTim,
+						YfAlarmRecId:YfAlarmRecId,
+						ReceiverId:ReceiverId
+					}
+				});
+			});
+			
+			
+			document.getElementById("confirm").addEventListener('tap',function(){
+				if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+					plus.nativeUI.toast("当前网络异常，请检查后重试");
+					return;
+				}
+				console.log(localStorage.getItem('MyUserId'))
+				console.log(vm.YfAlarmRecId)
+				console.log(vm.ReceiverId)
+				$.ajax({
+					url: url_all+"/api/MobileV2/SendTransRemindMsg?",		 
+					dataType: 'json',
+					data:{
+						UserId:localStorage.getItem('MyUserId'),
+						YfAlarmRecId:vm.YfAlarmRecId,
+						ReceiverId:vm.ReceiverId
+					},
+					method: 'get',
+					success: function(data) {
+						console.log(JSON.stringify(data))
+						if(data.message=="OK"){
+							plus.webview.currentWebview().close();
+							plus.webview.getWebviewById('TransRemind').setStyle({mask:"none"});
+							mui.fire(plus.webview.getWebviewById('TransRemind'),'showDataRemind');
+							plus.nativeUI.toast("消息推送成功");
+						}else{
+							plus.nativeUI.toast("消息推送失败，请重试");
+						}
+					},
+					error: function(xhr) {
+						plus.nativeUI.toast("消息推送失败，请重试");
+					}
+				});
+			});
+//			
+			document.getElementById("cancel").addEventListener('tap',function(){
+				plus.webview.currentWebview().close();
+				plus.webview.getWebviewById('TransRemind').setStyle({mask:"none"});
+			});
+		</script>
+	</body>
+
+</html>

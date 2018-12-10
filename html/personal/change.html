@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<style>
+			html{
+				font-size: 10px;
+			}
+			a {
+				color: white;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			}
+			#header .mui-title {
+			    color: #fff;
+			}
+			.pass>div{
+				margin: 1rem 0;
+				padding: 0.5rem;
+				font-size: 1.8rem;
+				color: lightgrey;
+			}
+			input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+				color: lightgray; 
+			}
+			#footer{
+				margin-top: 5rem;
+			}
+		</style>
+	</head>
+		<header id="header" class="mui-bar mui-bar-nav" >
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">修改</h1>
+		</header>
+		<div class="mui-content" >
+
+			<form class="mui-input-group pass" >
+				<div class="rowf ac ">
+					<input type="text"  v-model="pass" placeholder="请输入新的{{user}}" / >					
+				</div>
+			</form>
+
+			<div id="footer">
+				<button @click='chang'   type="button" class="mui-btn mui-btn-danger mui-btn-block " >
+					确定修改
+				</button>
+			</div>
+			
+		</div>
+	<body>
+		<script src="../../js/index.js"></script>
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				vm.className = self.className.split(' ')[1];
+				switch(vm.className){
+					case "name":
+						vm.user = '姓名'
+					break;
+					case "phone":
+						vm.user = '手机号'
+					break;
+					default:
+						vm.user = '邮箱'
+					break;
+				}
+				$('.mui-title').text('修改'+vm.user)				
+			});
+			var vm = new Vue({
+               el:'.mui-content',
+                data:{
+									user:'',
+									pass:'',
+									re1:/^[\u4e00-\u9fa5]{2,4}$/,
+									reg:/^0?1[3578]\d{9}$/,
+									myReg:/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/
+
+                	},
+                methods:{                	
+                	chang:function(){
+											that = this;
+											var list = plus.webview.currentWebview().opener();
+											switch(vm.className){
+												case "name":
+													//只包括英文字母与汉字
+													if (!that.re1.test(that.pass)){
+															mui.toast("请填写正确的姓名！");
+															return false;
+													}
+													$.get(url_all+"/api/MobileV2/UpdateName?",
+														{ UserId:localStorage.getItem('MyUserId'),
+															Name:that.pass
+															},
+														function(data){
+															console.log(JSON.stringify(data))
+																if(data.status == 0){
+																	mui.toast('修改成功');
+																	//触发列表界面的自定义事件（refresh）,从而进行数据刷新  
+																	mui.fire(list, 'personal',{id:vm.className+','+vm.pass});  
+																	mui.back();
+																}else{
+																	mui.toast(data.message);
+																}
+														}
+													);
+												break;
+												case "phone":
+													if(!that.reg.test(that.pass)){
+															mui.toast("请填写正确的手机号码！");
+															return false;
+													}
+													$.get(url_all+"/api/MobileV2/UpdateMobile?",
+														{ UserId:localStorage.getItem('MyUserId'),
+															Mobile:that.pass
+															},
+														function(data){
+															console.log(JSON.stringify(data))
+																if(data.status == 0){
+																	mui.toast('修改成功');
+																	  
+																	//触发列表界面的自定义事件（refresh）,从而进行数据刷新  
+																	mui.fire(list, 'personal',{id:vm.className+','+vm.pass});  
+																	mui.back();
+																}else{
+																	mui.toast(data.message);
+																}
+														}
+													);
+												break;
+												default:
+													if(!that.myReg.test(that.pass)){
+															mui.toast("邮箱格式不正确！");
+															return false;
+													}
+													$.get(url_all+"/api/MobileV2/UpdateEmail?",
+														{ UserId:localStorage.getItem('MyUserId'),
+															Email:that.pass
+															},
+														function(data){
+															console.log(JSON.stringify(data))
+																if(data.status == 0){
+																	mui.toast('修改成功');
+																	//触发列表界面的自定义事件（refresh）,从而进行数据刷新  
+																	mui.fire(list, 'personal',{id:vm.className+','+vm.pass});  
+																	mui.back();
+																}else{
+																	mui.toast(data.message);
+																}
+														}
+													);
+												break;
+											}					
+                	}
+								}
+    		});
+				
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<link href="index/cropper.min.css" rel="stylesheet" />
+		<link href="index/demo.css" rel="stylesheet" />
+		<style>
+			html{
+				font-size: 10px;
+			}
+			a {
+					color: white;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			}
+			#header .mui-title {
+			    color: #fff;
+			}
+			.pass>div{
+				padding: 1.5rem;
+				font-size: 1.8rem;
+				color: lightgrey;
+			}
+			input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+				color: lightgray; 
+			}
+			form {
+				text-align: left;
+			}
+			p {
+				font-size: 14px;
+				margin: 0;
+				color: black;
+				padding: 1rem;
+				font-weight: 600;
+			}
+			.mui-btn{
+				margin-right: 1rem;
+			}
+			.mui-btn-block{
+				margin-top: 2.5rem;
+				margin-bottom: 0;
+				padding: 1rem 0;
+			}
+				
+		</style>
+	</head>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">意见反馈</h1>
+		</header>
+		<div class="mui-content" >
+			<p>问题分类</p>
+			<form class="mui-input-group pass" >				
+				<div class="rowf ac ">
+					<button type="button" class="mui-btn mui-btn-danger mui-btn-outlined">改进建议</button>
+					<button type="button" class="mui-btn mui-btn-danger mui-btn-outlined">软件故障</button>
+					<button type="button" class="mui-btn mui-btn-danger mui-btn-outlined">其他问题</button>
+				</div>
+			</form>
+			<p>反馈问题</p>
+			<form class="pure-form mui-input-group" action="http://www.liewow.com/mobile-iamge-upload/index.html" method="post">
+				<textarea name="name" rows="5" cols="40" placeholder="请输入需要反馈的问题" style='border:none;border-bottom: 1px solid #ccc;border-radius: 0;'></textarea>
+				<!-- 上传图片的预览区域 -->
+				<section class="upload-box" id="J_upload_box">
+					<div class="upload" id="J_file_wrap">
+						<input type="file" accept="image/*" name="pic" id="J_file">
+					</div>
+				</section>	
+				
+			</form>
+			<p>联系方式</p>
+			<form class="mui-input-group" >				
+				<div class="rowf ac ">
+					<input type="text" class='conect' v-model="pass" placeholder="请输入QQ号,微信号,手机号等联系方式" / >					
+				</div>
+			</form>
+			<a class=" mui-btn-block mui-btn mui-btn-primary">提交</a>
+			<!-- 图片裁剪工作区域 -->
+			<section id="J_file_box">
+				<img src="http://www.liewow.com/mobile-iamge-upload/" id="J_file_box_img" alt="">
+			</section>
+	
+		<!-- 选择裁剪比例 -->
+			<section class="crop-group" id="J_crop_group">
+				<label>
+					<input type="radio" name="scale" value="1/1">
+					<span>1 : 1</span>
+				</label>
+				<label>
+					<input type="radio" name="scale" value="4/3" checked="checked">
+					<span>4 : 3</span>
+				</label>
+				<label>
+					<input type="radio" name="scale" value="9/16">
+					<span>9 : 16</span>
+				</label>
+			</section>
+	
+			<!-- 裁剪或取消 -->
+			<section class="btn-group" id="J_btn_group">
+				<span id="J_cancel">取消</span>
+				<span id="J_crop">裁剪</span>
+			</section>
+			
+		</div>
+	<body>
+		<script src="../../js/index.js"></script>
+		<script src="../../js/vue.js"></script>		
+		<script src="./index/jquery-2.1.4.min.js"></script>		
+		<script src="./index/upload.js"></script>
+		<script src="index/demo.js"></script>		
+		<script type="text/javascript">
+			// mui.init()
+			var vm = new Vue({
+               el:'.mui-content',
+                data:{
+									user:localStorage.getItem('Username'),
+									name:'马万栋',
+									phone:'18337117175',
+									email:'2804011057@qq.com',
+									pass:'',
+									pass_1:''
+
+                	},
+                methods:{                	
+                	chang:function(){
+										that = this;
+					
+                	}
+				 }
+    		});
+			$('.mui-btn-outlined').on('click','',function(){
+				$('.mui-active').removeClass('mui-active');
+				$(this).addClass('mui-active');
+			})
+			$('.mui-action-back').on('click','',function(){
+				// plus.webview.show("index.html");//必须先show再close
+				plus.webview.currentWebview().close();
+			})
+
+		</script>
+	</body>
+
+</html>

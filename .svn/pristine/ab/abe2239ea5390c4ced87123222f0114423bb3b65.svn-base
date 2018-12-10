@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<style>
+			html{
+				font-size: 10px;
+			}
+			a {
+					color: white;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			}
+			#header .mui-title {
+			    color: #fff;
+			}
+			.pass>div{
+				margin: 1rem 0;
+				padding: 0.5rem;
+				font-size: 1.8rem;
+				color: lightgrey;
+			}
+			input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+				color: lightgray; 
+			}
+			#footer{
+				margin-top: 5rem;
+			}
+		</style>
+	</head>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">修改密码</h1>
+		</header>
+		<div class="mui-content" >
+
+			<form class="mui-input-group pass" >
+				<div class="rowf ac ">
+					<input type="text"  v-model="pass" placeholder="请输入新的密码" / >					
+				</div>
+			</form>
+			<form class="mui-input-group pass" >
+				<div class="rowf ac ">
+					<input type="text"  v-model="pass_1" placeholder="再次输入密码" / >					
+				</div>
+			</form>
+			<div id="footer">
+				<button @click='chang'   type="button" class="mui-btn mui-btn-danger mui-btn-block " >
+					确定修改 
+				</button>
+			</div>
+			
+		</div>
+	<body>
+		<script src="../../js/index.js"></script>
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script type="text/javascript">
+			mui.init();
+	    mui.plusReady(function(){
+
+			});
+			var vm = new Vue({
+               el:'.mui-content',
+                data:{
+									pass:'',
+									pass_1:''
+
+                	},
+                methods:{                	
+                	chang:function(){
+										that = this;
+										if(that.pass !=that.pass_1){
+											mui.toast('请重新输入新密码');
+											return false
+										}
+										$.get(url_all+"/api/MobileV2/UpdatePassword?",
+											{ UserId:localStorage.getItem('MyUserId'),
+												NewPassword:that.pass
+												},
+											function(data){
+												console.log(JSON.stringify(data))
+													if(data.status == 0){
+														mui.toast('修改成功');
+														plus.webview.currentWebview().close();
+													}
+											}
+										);
+                	}
+								}
+    		});
+				
+		</script>
+	</body>
+
+</html>

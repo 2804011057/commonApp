@@ -1,0 +1,372 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-bar-nav {
+			    background-color: #1F79CE;
+			}
+			#header .mui-title {
+			    color: #fff;
+			}
+			.mui-content ul{
+				padding: 2rem;
+				font-size: 1.6rem;
+				font-family: 微软雅黑;
+			}
+			.mui-content ul li{
+				margin: 2rem 1rem;
+			}
+			.rowf {
+			    flex-flow: -webkit-wrap;
+			    flex-flow: wrap;
+			}
+			.col-33{
+				padding:1rem  0.5rem 1rem 0
+			}
+			.col-33 div{
+				background-color: white;
+				border:1px solid lightgray ;				
+				text-align: center;
+				font-size: 1.3rem;
+    			padding: 1rem 0;
+			}
+			img{
+				width: 2rem;
+			}
+			.kind .col-33{
+				position: relative;
+			}
+			.kind .select{
+				position: absolute;
+				bottom: 1rem;
+    			left: 1rem;
+				width: 2rem;
+				display: none;
+			}
+			.weight{
+				line-height: 40px;
+			}
+			.hidden{
+				display: none;
+			}
+			.mui-btn-block{
+				margin-bottom: 0;
+			}
+			.col-20.weight{
+				text-align: right;
+				padding-right: 0.5rem;
+			}
+			a {
+			    color: white;
+			}
+			select{
+				margin-bottom: 0;
+			}
+			input[type=text]{
+				margin-bottom: 0;
+			}
+			.mui-btn.mui-pull-right{
+				top: 5px;
+			}
+		</style>
+	</head>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">打包</h1>
+			<button class="mui-btn mui-btn-green mui-pull-right">打印</button>
+		</header>
+		<div class="mui-content" >
+		    <ul>
+		    	<li class="rowf">
+		    		<div class="col-40">医废条形码:</div>
+		    		<div class="col-60">{{barCode}}</div>
+		    		<div class="col-40"></div>
+		    		<div class="col-60" @click="scan">
+		    			<button class="btn mui-btn-green">扫描条形码</button>
+		    		</div>
+		    	</li>
+		    	<li class="rowf">
+		    		<div class="col-40">医废来源:</div>
+		    		<div class="col-60">
+		    			<div>
+		    				<input type="text" v-model="input_select" @click="input_go()" readonly="readonly"/>
+		    			</div>
+		    			<button class="btn mui-btn-green" @click="scan_1">扫描病区二维码</button>
+		    		</div>
+		    	</li>
+		    	<li class="rowf">
+		    		<div class="col-30">医废类型:</div>
+		    	</li>
+		    	<li class="rowf kind " >
+					<div class="col-33" v-for="num in kind" track-by="$index">
+						<div class="rowf ac ar">
+							<img class="imgShow" :src="'../../images/'+num.YfType+'.png'" alt="">
+							<span>{{num.YfTypeName.length ==5?num.YfTypeName:(num.YfTypeName+'    ')}}</span>			
+						</div>	
+						<div class="hidden">{{num.YfType}}</div>
+						<img class='select' src="../../images/true.png" alt="" />
+					</div>
+		   		
+		    	</li>
+		    	<li class="rowf">
+		    		<div class="col-40 weight">医废重量:</div>
+		    		<div class="col-40">
+		    			<input type="number"  v-model="input_value" placeholder="请输入" / >
+		    		</div>
+		    		<div class="col-20 weight">KG</div>
+		    	</li>
+		    	<li>
+		    		<button @click='submit'   type="button" class="mui-btn mui-btn-warning mui-btn-block " disabled='{{barCode.length==0 || barCode=="请先点击扫描按钮"}}'>
+						提交 
+					</button>
+		    	</li>
+		    </ul>
+		</div>
+	<body>
+		<script src="../../js/index.js"></script>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/time.js"></script>
+		<script type="text/javascript">
+			mui.init();
+	        mui.plusReady(function(){
+				var ws=plus.webview.currentWebview();
+				ws.addEventListener('maskClick', function(){
+					if(plus.webview.getWebviewById('mask')!=""&&plus.webview.getWebviewById('mask')!=null){
+						plus.webview.getWebviewById('mask').close();
+					}
+					ws.setStyle({mask:'none'});
+				},false);
+				if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+					return;
+				}
+			});
+			var vm = new Vue({
+               el:'.mui-content',
+                data:{
+                	barCode:'请先点击扫描按钮',
+                	selected:'',
+                	from:'',
+                	kind:[],
+                	kingText:'',
+                	YfType:'',
+                	pid:'',
+                	input_select:'',
+                	input_value:'',
+                	YfType:''
+                	},
+                methods:{
+                	wasteType:function(){
+                		that=this;
+										$.get(url_all+"/api/MobileV2/GetTypeStat?",
+											{ PartitionId:0,
+												UserId:localStorage.getItem('MyUserId'),
+												Date:moment().format("YYYY-MM-DD")
+											},
+											function(data){
+										  	console.log(JSON.stringify(data))
+											that.kind=data.data;
+											}
+										);
+                		
+                	},
+                	scan:function(){
+                		var pageOne = plus.webview.getWebviewById('scan');
+                		if(pageOne != null){
+                			pageOne.close();
+                		};
+                		mui.openWindow({
+											 url: 'scan.html', 
+											 id:'scan',
+											 show:{
+													aniShow:'slide-in-right',
+													duration:300
+												},
+											 waiting:{
+												autoShow:false
+											 }
+									});
+                		
+                	},
+                	scan_1:function(){
+                		mui.openWindow({
+					         url: 'scan_1.html', 
+					         id:'scan_1.html',
+					         show:{
+					            aniShow:'slide-in-right',
+					            duration:300
+					          },
+					         waiting:{
+					          autoShow:false
+					         }
+					    });
+                		
+                	},
+                	input_go:function(){
+                		plus.webview.currentWebview().setStyle({mask:'rgba(0,0,0,0.6)'});
+						mui.openWindow({
+							url:'../mask/mask.html',
+		    				id:'mask',
+		    				styles:{
+		      					top:'20%',//新页面顶部位置
+		     				 	bottom:'20%',//新页面底部位置
+		      					width:'80%',//新页面宽度，默认为100%
+		      					left:'10%',
+		      					borderRadius: '20px',
+		      					
+		    				},
+		    				show:{
+		      					aniShow:'zoom-fade-out',//页面显示动画，默认为”slide-in-right“；
+		      					duration:100//页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+		    				},
+		    				waiting:{
+		      					autoShow:false,//自动显示等待框，默认为true
+		      				},
+		      				extras:{
+		      					webViewId:'Pack'
+		      				}
+						});
+                	},
+                	submit:function(){               		
+                		that = this;
+                		if(that.input_value==0) return mui.toast('重量不能为0'); 
+						var hh = $('#t1').val();
+						var h1 = new RegExp('^(0\\.)');
+						var j1 = new RegExp('^0');
+						if(!j1.test(that.input_value)){
+							console.log("匹配成功")	
+						}else{
+							//0开头判断
+							if(h1.test(that.input_value)){
+							//0.开头判断
+								console.log("匹配成功")				
+							}else{
+								return mui.toast('重量必须为数值')	
+							}
+						}
+               		
+						$.ajax({
+							url: url_all+"/api/MobileV2/Pack?",		 
+							dataType: 'json',
+							data:{
+								UserId:localStorage.getItem('MyUserId'),
+								PartitionId:that.pid,
+								BarCode:that.barCode,
+								YfType:that.YfType,
+								Weight:that.input_value
+							},
+							method: 'get',
+							success: function(data) {
+								if(data.message =='OK'){
+									localStorage.setItem('Next_title',data.data.CompanyName);
+									localStorage.setItem('Next_code',data.data.YfCode);
+									localStorage.setItem('Next_from',data.data.PartitionName);
+									localStorage.setItem('Next_kind',data.data.YfTypeName);
+									localStorage.setItem('Next_time',data.data.PackTimeString);
+									localStorage.setItem('Next_pack',data.data.PackStaffName);
+									mui.toast('打包成功');
+								}else{
+									mui.toast(data.message);
+								}
+							},
+							error: function(xhr) {
+									mui.toast('打包失败');	
+							}
+						});					
+                		if((that.barCode != '')&&(that.input_value != '')&&(that.pid != '')&&(that.YfType!='')&&(that.input_select!='')&&(that.barCode='请点击扫描按钮')){
+                			that.barCode = '请先点击扫描按钮';          			
+	                		that.YfType = '';
+	                		that.pid = '';
+	                		that.input_select = '';
+	                		that.input_value = '';
+	                		$('.select').each(function(){
+			    				$(this).css('display','none');
+			    			});
+                		}else{
+                			mui.toast('请核对需要提交的内容')
+                		}
+                		
+                		
+                	},
+				 }
+    		});
+    		vm.wasteType();
+    		function scaned(t, r, f){				
+					$.get(url_all+"/api/MobileV2/GetRubbishByBarCode?",
+					{ UserId:localStorage.getItem('MyUserId'),
+						BarCode:r
+					},
+					function(data){
+						console.log(JSON.stringify(data))
+						if(data.data!=null){
+							switch (data.data.YfRubbishStatus){
+								case 'YfRubbishStatus_Pack':
+								plus.nativeUI.toast('已打包');
+								break;
+								case 'YfRubbishStatus_Trans':
+								plus.nativeUI.toast('已交接');
+								break;
+								case 'YfRubbishStatus_Storage':
+								plus.nativeUI.toast('已入库');
+								break;
+								case 'YfRubbishStatus_Out':
+								plus.nativeUI.toast('已出库');
+								break;
+								default:
+								plus.nativeUI.toast(data.data.YfRubbishStatus);
+							}	
+							vm.barCode='';	
+						}else{
+							vm.barCode=r;	
+						}
+					});
+				};
+				function scaned_1(t, r, f){
+					vm.input_select = r.split(',')[0];
+					vm.pid = r.split(',')[1]
+				}
+					$('.kind').on('tap','.col-33',function(){
+						$('.select').each(function(){
+							$(this).css('display','none');
+						});
+						$(this).find('img').css('display','block');
+						vm.YfType=$(this).find('.hidden').text();
+						
+						console.log(vm.YfType)
+					});
+					//	       	进入打印
+					$('.mui-pull-right').on('tap',function(){
+						mui.openWindow({
+									url: 'pack_1.html', 
+									id:'pack_1',
+									extras:{
+										},
+									show:{
+											aniShow:'slide-in-right',
+											duration:300
+										},
+									waiting:{
+										autoShow:false
+									}
+							});
+					});
+	//  		接收遮罩层传来的的分区id 及名称
+					window.addEventListener('showData',function(event){
+					plus.webview.currentWebview().setStyle({mask:'none'});
+					vm.input_select=event.detail.name;
+					vm.pid=event.detail.id;
+			});
+		</script>
+	</body>
+
+</html>

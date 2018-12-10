@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<style>
+			html{
+				font-size: 10px;
+			}
+			.mui-bar-nav{
+			        background-color: #1F79CE;}
+			.mui-title{color:#fff}
+			    a{color:#fff;}
+			.mui-bar-tab .mui-tab-item.mui-active {
+				color: #FFFFFF;background-color: #00B2EE;}
+			.update {
+				font-style: normal;
+				color: #999999;
+				margin-right: -42px;
+				font-size: 15px
+			}
+			.aboutus{ padding: 15px; background-color: #fff;}
+			.aboutus p img{ margin: 0px auto; display: block; max-width: 70%;}
+			.aboutus p{ color: #666; line-height: 1.7;}
+			.company i{
+				word-wrap:break-word; width:200px;
+				text-align: right;
+			}
+			.company span{
+				line-height: 42px;
+			}
+			.mui-table-view-chevron .mui-table-view-cell.last{
+				line-height: 3.3rem;
+			}
+			.mui-btn.mui-pull-right {
+			    top: 5px;
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<header  id="header" class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">关于我们</h1>
+		    <!-- <button class="mui-btn mui-btn-green mui-pull-right">注销</button> -->
+		</header>
+		<div class="mui-content" id='content'>
+			<div class="aboutus"style="background-color: #fff;padding-bottom: 15px;">
+				<p><img src="../../images/code.png"/></p>
+				<p style="text-align: center;color:#121212; margin-bottom: 15px;">医废院内追溯管理系统</p>
+			</div>
+			<ul class="mui-table-view mui-table-view-chevron">
+							<li class="mui-table-view-cell">
+								<a>公司公众号<i class="mui-pull-right update">皓伏网络</i></a>
+							</li>
+							<li class="mui-table-view-cell company">
+								<span>公司网址</span>
+								<i class="mui-pull-right update" >上海市延安西路376弄22号永兴商务楼6楼</i>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>联系电话<i class="mui-pull-right update">+86 21 3353 3820</i></a>
+							</li>
+							<li class="mui-table-view-cell last">
+								<a>当前版本
+									<i class="mui-pull-right update">
+										<span v-show="isShow">{{old_version}}（新版本{{new_version}}）</span>
+										<button type="button" class="mui-btn mui-btn-green" v-show="isShow" @click = 'updata()'>更新</button>
+										<span v-show="!isShow">{{old_version}}（最新版本）</span>
+									</i>
+								</a>
+							</li>
+					</ul>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/index.js" type="text/javascript" charset="utf-8"></script>
+	    <script type="text/javascript">
+	    	mui.init();			
+	        mui.plusReady(function(){
+	            var self = plus.webview.currentWebview();	                
+	        });
+
+            var vm = new Vue({
+	               el:'#content',
+	                data:{
+	                	list:[],
+	                	isShow:true,
+	                	old_version:'1.0.5',
+	                	new_version:'',
+	                	Url:''
+                	},
+	                methods:{
+	                	about:function(a){
+	                		that = this;		              
+					        $.get(url_all+"/api/MobileV2/GetLastVersion",
+								{ },
+						  		function(data){
+						  			that.new_version = data.data.PackageVersion;
+//									that.new_version ='1.0.1';
+						  			if(that.old_version.replace('.', '')<that.new_version.replace('.', '')){
+						  				that.isShow = true
+						  			}else{
+						  				that.isShow = false
+						  			};
+						  			that.Url = data.data.Url;
+		                		}
+						  	)
+	              		}
+	                }
+	        });
+	        vm.about();
+	        mui('#header').on('tap','.mui-btn',function(){
+	        	var curr = plus.webview.currentWebview();
+	        	curr.close();
+                plus.runtime.restart();			    
+	        });
+	        mui('.mui-content').on('tap', '.mui-btn', function(e) {
+	            mui('.mui-content .mui-btn').button('loading');
+	            var ua = navigator.userAgent.toLowerCase();
+       				if(/iphone|ipad|ipod/.test(ua)) {
+							plus.runtime.openURL(that.Url);
+       				}else if(/android/.test(ua)){
+						var dtask = plus.downloader.createDownload( that.Url, {}, function ( d, status ) {
+							mui('.mui-btn').button('reset');
+						    if ( status == 200 ) { // 下载成功
+//						    	alert( "XIA: " + status ); 
+						        var path = d.filename;
+						        console.log(d.filename);
+						        plus.runtime.install(path);  // 安装下载的apk文件
+						    } else {//下载失败			
+						        alert( "Download failed: " + status ); 
+						    }  
+						});
+						dtask.start(); 
+       				}else{
+       				 	return ;
+       				}
+	        });
+
+	    </script>
+	</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="../../js/mui.min.js"></script>
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/index.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-bar-nav {
+				background-color: #1F79CE;
+				color: white;
+			}
+			
+			.mui-bar .mui-title {
+				color: white;
+			}
+			
+			.mui-bar-nav.mui-bar .mui-icon {
+				color: white;
+			}
+			
+			#container,
+			#imgId,
+			#qrcode {
+				background-color: white;
+			}
+			
+			#qrcode {
+				display: none;
+			}
+			@media only screen and (min-width: 310px){
+				#container{
+					margin: 0;
+				} 
+			}
+			@media only screen and (min-width: 360px){
+				#container{
+					margin: 0.5rem ;
+				} 
+			}
+			.mui-content .btn,#container{
+				margin: 0.5rem ;
+			}
+		</style>
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+		</script>
+	</head>
+
+	<body>
+		<!-- 顶部导航 -->
+		<header class="mui-bar mui-bar-nav bgc_main head">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">打印</h1>
+		</header>
+		<div class="mui-content">
+			<button class="btn mui-btn-green" onclick="openBluetoothPrinter()">打开蓝牙</button>
+			<button class="btn mui-btn-green" onclick="connectBluetoothPrinter()">连接打印机</button>
+			<button class="btn mui-btn-green" onclick="printImg()">打印图片</button>
+			<canvas id="container" width="320" height="200" >				
+		</div>
+		<div id='qrcode'></div>
+		<script src="../../js/jquery-3.0.0.min.js"></script>
+		<script src="../../js/time.js"></script>
+		<script src="../../js/plugin.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="http://cdn.staticfile.org/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script type="text/javascript">
+			//判断缓存的设备地址
+			var vm = new Vue({
+				el: '.mui-content',
+				data: {
+					printerCode: '',
+					title: '',
+					code: '',
+					from: '',
+					kind: '',
+					time: '',
+					pack: ''
+		
+				}
+			});
+			vm.title = localStorage.getItem('Next_title');
+			vm.code = localStorage.getItem('Next_code');
+			vm.from = localStorage.getItem('Next_from');
+			vm.kind = localStorage.getItem('Next_kind');
+			vm.time = localStorage.getItem('Next_time');
+			vm.pack = localStorage.getItem('Next_pack');
+			var interval = 30;
+			var textY= 60;			
+			var c = document.getElementById("container");
+			var ctx = c.getContext("2d");
+			ctx.strokeStyle = "red";
+			ctx.font = "20px 黑体";
+			ctx.fillText(vm.title, 5, 30);
+			ctx.font = "15px 黑体";
+			ctx.fillText("编  号：" + vm.code, 120, textY+(0*interval));
+			ctx.fillText("来  源：" + vm.from, 120, textY+(1*interval));
+			ctx.fillText("种  类：" + vm.kind, 120, textY+(2*interval));
+			ctx.fillText("时  间：" + vm.time, 120, textY+(3*interval));
+			ctx.fillText("打包人：" + vm.pack, 120, textY+(4*interval));
+		
+			ctx.stroke();
+			var imgObj = new Image();
+			var imgObj_1 = new Image();
+			var qrimage = new Image();
+			$('#qrcode').qrcode({
+				width: 100,
+				height: 100,
+				text: vm.code
+			});
+			qrimage = $('#qrcode').find('canvas')[0].toDataURL("image/png");
+			switch (vm.kind){
+				case '感染性废物':
+				imgObj_1.src = "../../images/YfType_Gr_1.png";
+				break;
+				case '病理性废物':
+				imgObj_1.src = "../../images/YfType_Bl_1.png";
+				break;
+				case '损伤性废物':
+				imgObj_1.src = "../../images/YfType_Ss_1.png";
+				break;
+				case '化学性废物':
+				imgObj_1.src = "../../images/YfType_Hx_1.png";
+				break;
+				case '药物性废物':
+				imgObj_1.src = "../../images/YfType_Yw_1.png";
+				break;
+				default:
+				imgObj_1.src = "../../images/YfType_Qt_1.png";
+					break;
+			}
+			imgObj.src = qrimage;
+			//待图片加载完后，将其显示在canvas上
+			imgObj_1.onload = function() {
+				// ctx.drawImage(this, 200, 5);//this即是imgObj,保持图片的原始大小：470*480
+				ctx.drawImage(this, 250, 5, 25, 25); //改变图片的大小到1024*768					
+		
+			};
+			imgObj.onload = function() {
+				// ctx.drawImage(this, 200, 5);//this即是imgObj,保持图片的原始大小：470*480
+				ctx.drawImage(this, 5, textY+5, 100, 100); //改变图片的大小到1024*768
+			};
+		
+			function bluetoothIsEnabled() {
+				plus.myPlugin.bluetoothIsEnabled(function(result) {
+					mui.toast("蓝牙已开启");
+				}, function(result) {
+					mui.toast("蓝牙已关闭");
+				});
+			}
+		
+			function openBluetoothPrinter() {
+				plus.myPlugin.openBluetoothPrinter(function(result) {
+					mui.toast("蓝牙已开启");
+				}, function(result) {
+					mui.toast("蓝牙已关闭");
+				});
+			}
+		
+			function connectBluetoothPrinter() {
+				plus.myPlugin.connectBluetoothPrinter(function(result) {
+					mui.toast("蓝牙已开启");
+				}, function(result) {
+					mui.toast("蓝牙已关闭");
+				});
+			}
+		
+			function printImg() {
+				plus.myPlugin.printImg(c.toDataURL().split('base64,')[1], function(result) {
+					mui.toast("蓝牙打印机已连接");
+				}, function(result) {
+					mui.toast("蓝牙打印机未连接");
+				});
+			}
+		
+			function PrinterConnectScaning() {
+				mui.toast("打印机扫描中...");
+			}
+		
+			function PrinterConnectStart() {
+				mui.toast("打印机连接开始!");
+			}
+		
+			function PrinterConnecting() {
+				mui.toast("打印机连接中...");
+			}
+		
+			function PrinterConnectSuccess() {
+				mui.toast("打印机连接成功!");
+			}
+		
+			function PrinterConnectFail() {
+				mui.toast("打印机连接失败!");
+			}
+		
+			function PrinterConnectColse() {
+				mui.toast("打印机连接关闭!");
+			}
+		
+			
+		</script>
+	
+	</body>
+
+</html>
